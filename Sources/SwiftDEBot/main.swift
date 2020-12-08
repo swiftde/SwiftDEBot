@@ -26,6 +26,7 @@ bot.on(.reactionAdd) { data in
 
     if emoji.name == "this2" {
         bot.addReaction("a:this:785804431597240351", to: messageID, in: channel.id)
+        bot.deleteReaction(":this2:784350423862870016", from: messageID, in: channel.id)
     }
 }
 
