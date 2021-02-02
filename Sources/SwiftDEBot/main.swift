@@ -8,7 +8,8 @@ let bot = Sword(token: token)
 let messageCommands: [MessageCommand] = [
     .hello,
     .hearts,
-    .ping
+    .ping,
+    .xcode,
 ]
 
 bot.editStatus(to: "", playing: "swiftc -Ounchecked")
