@@ -1,5 +1,5 @@
-extension MessageCommand {
-    static let hello = MessageCommand(
+extension Command {
+    static let hello = Command.onMessageCreate(
         shouldRun: { message in message.content == "!hallo" },
         run: { bot, message in
             if let name = message.author?.username {
