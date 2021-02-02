@@ -14,7 +14,11 @@ let messageCommands: [MessageCommand] = [
 bot.editStatus(to: "", playing: "swiftc -Ounchecked")
 
 bot.on(.messageCreate) { data in
-    guard let message = data as? Message else { return }
+    guard
+        let message = data as? Message,
+        !(message.author?.isBot ?? false)
+    else { return }
+
     do {
         try messageCommands
             .filter { $0.shouldRun(message) }
