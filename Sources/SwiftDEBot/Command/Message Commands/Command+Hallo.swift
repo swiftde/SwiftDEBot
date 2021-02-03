@@ -7,8 +7,8 @@ extension Command where Trigger == Message {
                 return
             }
 
-            if let name = message.author?.username {
-                bot.send("Hi \(name) :wave:", to: message.channel.id)
+            if let handle = message.author?.mentionHandle {
+                bot.send("Hi \(handle) :wave:", to: message.channel.id)
             } else {
                 bot.send("Hi :wave:", to: message.channel.id)
             }
