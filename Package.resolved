@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "Result",
+        "repositoryURL": "https://github.com/antitypical/Result",
+        "state": {
+          "branch": null,
+          "revision": "12920a5c2595926efab9274d6003e29f503dbb66",
+          "version": "5.0.0"
+        }
+      },
+      {
         "package": "Starscream",
         "repositoryURL": "https://github.com/Azoy/Starscream.git",
         "state": {

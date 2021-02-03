@@ -1,6 +1,9 @@
 import Foundation
 import Sword
 
+// Remove me when upgrading to a more current version of Swift.
+import Result
+
 extension Command where Trigger == Message {
     static let xcodeTypo = Command(
         run: { bot, message in
