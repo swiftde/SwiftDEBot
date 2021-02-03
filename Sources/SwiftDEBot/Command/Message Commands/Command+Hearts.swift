@@ -2,7 +2,7 @@ import Sword
 
 extension Command where Trigger == Message {
     static func heartsMessage(to handle: String) -> String {
-        return "Hey @\(handle), es gibt eine ganze Reihe von Herz-Emoji: ❤️, 💜, 💙, 💚, 💛, 🧡, 🖤, 🤍, 🤎, 💖, 💝, 💞, 💗, 💘, 💕 und 💓. Das von dir genutzte ♥️ ist allerdings Teil des Sets von Symbolen für Spielkarten, zusammen mit ♠️, ♣️ und ♦️ und ist daher eher unpassend in anderen Kontexten."
+        return "Hey \(handle), es gibt eine ganze Reihe von Herz-Emoji: ❤️, 💜, 💙, 💚, 💛, 🧡, 🖤, 🤍, 🤎, 💖, 💝, 💞, 💗, 💘, 💕 und 💓. Das von dir genutzte ♥️ ist allerdings Teil des Sets von Symbolen für Spielkarten, zusammen mit ♠️, ♣️ und ♦️ und ist daher eher unpassend in anderen Kontexten."
     }
 
     static let hearts = Command(
