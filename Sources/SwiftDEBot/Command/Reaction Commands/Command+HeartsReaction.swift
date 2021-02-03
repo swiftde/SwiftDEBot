@@ -1,8 +1,9 @@
-extension Command {
-    static let heartsReaction = Command.onReactionAdd(
-        shouldRun: { reaction in reaction.emoji.name == "♥️" },
+import Sword
+
+extension Command where Trigger == Reaction {
+    static let heartsReaction = Command(
         run: { bot, reaction in
-            guard reaction.userID != bot.user?.id else {
+            guard reaction.emoji.name == "♥️", reaction.userID != bot.user?.id else {
                 return
             }
 
@@ -12,7 +13,7 @@ extension Command {
                 }
 
                 bot.send(
-                    Command.heartsMessage(to: user.mentionHandle),
+                    Command<Message>.heartsMessage(to: user.mentionHandle),
                     to: reaction.channel.id
                 )
             }
