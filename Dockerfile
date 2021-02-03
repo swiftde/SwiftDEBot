@@ -3,7 +3,7 @@ RUN apt-get update && apt-get install -y libsodium-dev
 
 WORKDIR /app
 COPY . ./
-RUN make build
+RUN swift build --configuration release
 
 # FROM swift:5.3-slim
 FROM swift:4

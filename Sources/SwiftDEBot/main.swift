@@ -12,8 +12,7 @@ bot.onMessageCreate(
     .hello,
     .hearts,
     .ping,
-    .xcode,
-    .version
+    .xcode
 )
 
 bot.onReactionAdd(
