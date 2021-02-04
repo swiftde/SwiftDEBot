@@ -30,7 +30,7 @@ extension Command where Trigger == Message {
                         return
                     }
 
-                    let joinedProposals = matchingQuery.map(\.shortDescription).joined(separator: "\n\n")
+                    let joinedProposals = matchingQuery.map { $0.shortDescription }.joined(separator: "\n\n")
                     bot.send(joinedProposals, to: message.channel.id)
                 }
             }
@@ -113,7 +113,7 @@ fileprivate struct Proposal: Decodable {
     var shortDescription: String {
         return """
         **\(id)** \(title.trimmingCharacters(in: .whitespacesAndNewlines))
-        Autor(en): \(authors.map(\.name).joined(separator: ", "))
+        Autor(en): \(authors.map { $0.name }.joined(separator: ", "))
         Status: \(status.description)
         <https://github.com/apple/swift-evolution/blob/main/proposals/\(link)>
         """
