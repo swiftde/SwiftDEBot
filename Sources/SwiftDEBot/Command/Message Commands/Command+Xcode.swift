@@ -53,10 +53,6 @@ extension Command where Trigger == Message {
     }
 }
 
-fileprivate struct XcodeVersionCheckError: Error {
-    let error: String
-}
-
 fileprivate struct XcodeVersion: Decodable {
     let name: String
     let version: Version
