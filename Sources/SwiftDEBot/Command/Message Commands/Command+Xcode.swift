@@ -23,7 +23,7 @@ extension Command where Trigger == Message {
             latestXcodeVersions { result in
                 switch result {
                 case .failure(let error):
-                    bot.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error.error)", to: message.channel.id)
+                    bot.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel.id)
                 case .success(let versions):
                     guard let latest = versions.first else {
                         bot.send("xcodereleases.com zeigt keine Versionen an 🤔", to: message.channel.id)
@@ -35,19 +35,18 @@ extension Command where Trigger == Message {
         }
     )
 
-    fileprivate static func latestXcodeVersions(completion: @escaping (Result<[XcodeVersion], XcodeVersionCheckError>) -> Void) {
+    fileprivate static func latestXcodeVersions(completion: @escaping (Result<[XcodeVersion], String>) -> Void) {
         let xcodeReleasesURL = URL(string: "https://xcodereleases.com/data.json")!
-        let task = URLSession.shared.dataTask(with: xcodeReleasesURL) { data, response, error in
+        let task = URLSession.shared.dataTask(with: xcodeReleasesURL) { data, _, error in
             guard error == nil, let data = data else {
-                completion(.failure(XcodeVersionCheckError(error: error?.localizedDescription ?? "keine Daten vorhanden")))
+                completion(.failure(error?.localizedDescription ?? "keine Daten vorhanden"))
                 return
             }
             do {
                 let versions = try JSONDecoder().decode([XcodeVersion].self, from: data)
                 completion(.success(versions))
             } catch {
-                dump(error)
-                completion(.failure(XcodeVersionCheckError(error: error.localizedDescription)))
+                completion(.failure(String(describing: error)))
             }
         }
         task.resume()
