@@ -93,8 +93,8 @@ fileprivate struct Proposal: Decodable {
             case (let .some(version), nil, nil):
                 return "\(state) Swift \(version)"
             case (nil, let .some(start), let .some(end)):
-                guard let startDate = Self.inputDateFormatter.date(from: start),
-                      let endDate = Self.inputDateFormatter.date(from: end)
+                guard let startDate = Status.inputDateFormatter.date(from: start),
+                      let endDate = Status.inputDateFormatter.date(from: end)
                 else { return state }
                 let startStr = Status.outputDateFormatter.string(from: startDate)
                 let endStr = Status.outputDateFormatter.string(from: endDate)
