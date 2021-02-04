@@ -13,7 +13,8 @@ bot.onMessageCreate(
     .hearts,
     .ping,
     .xcodeTypo,
-    .xcodeLatest
+    .xcodeLatest,
+    .swiftEvolution
 )
 
 bot.onReactionAdd(
