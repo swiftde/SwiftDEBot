@@ -96,8 +96,8 @@ fileprivate struct Proposal: Decodable {
                 guard let startDate = Self.inputDateFormatter.date(from: start),
                       let endDate = Self.inputDateFormatter.date(from: end)
                 else { return state }
-                let startStr = Self.outputDateFormatter.string(from: startDate)
-                let endStr = Self.outputDateFormatter.string(from: endDate)
+                let startStr = Status.outputDateFormatter.string(from: startDate)
+                let endStr = Status.outputDateFormatter.string(from: endDate)
                 return "\(state) \(startStr)-\(endStr)"
             default:
                 return state
@@ -106,7 +106,7 @@ fileprivate struct Proposal: Decodable {
     }
 
     func matches(query: String) -> Bool {
-        id.lowercased().contains(query.lowercased())
+        return id.lowercased().contains(query.lowercased())
             || title.lowercased().contains(query.lowercased())
     }
 
