@@ -10,7 +10,7 @@ extension Command where Trigger == Message {
             guard message.content.hasPrefix("!se") else { return }
             let query = message.content.components(separatedBy: " ")[1...].joined(separator: " ")
             guard query.trimmingCharacters(in: .whitespacesAndNewlines) != "" else {
-                bot.send("Ich weiß nicht wonach ich suchen soll. Bitte schreib' eine Nachricht wie `!se async`", to: message.channel.id)
+                bot.send("Ich weiß nicht wonach ich suchen soll. Bitte schreib' eine Nachricht wie `!se async`.", to: message.channel.id)
                 return
             }
 
