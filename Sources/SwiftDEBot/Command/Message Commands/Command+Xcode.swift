@@ -29,7 +29,20 @@ extension Command where Trigger == Message {
                         bot.send("xcodereleases.com zeigt keine Versionen an 🤔", to: message.channel.id)
                         return
                     }
-                    bot.send(latest.shortDescription, to: message.channel.id)
+                    if latest.isPrerelease, let latestStable = versions.first(where: { $0.isPrerelease == false }) {
+                        bot.send("""
+                        Das aktuellste Release ist \(latest.shortDescription)
+                        Mehr Infos hier: \(latest.detailURLString)
+
+                        Das letzte **stabile** Release ist \(latestStable.shortDescription)
+                        Mehr Infos hier: \(latestStable.detailURLString)
+                        """, to: message.channel.id)
+                    } else {
+                        bot.send("""
+                        Das aktuellste Release von Xcode ist \(latest.shortDescription)
+                        Mehr Infos hier: \(latest.detailURLString)
+                        """, to: message.channel.id)
+                    }
                 }
             }
         }
@@ -58,6 +71,10 @@ fileprivate struct XcodeVersion: Decodable {
     let version: Version
     let date: ReleaseDate
     let links: Links?
+
+    var isPrerelease: Bool {
+        return version.release.release == nil || version.release.release == false
+    }
 
     struct Version: Decodable {
         let number: String
@@ -119,9 +136,10 @@ fileprivate struct XcodeVersion: Decodable {
         if let release = version.release.description {
             releaseStr = release + " "
         }
-        return """
-        Die aktuellste Xcode Version ist \(name) \(version.number) \(releaseStr)(\(version.build)) vom \(date.germanFormatted).
-        Mehr Infos hier: \(links?.notes?.url.absoluteString ?? "Keine Detail-URL vorhanden")
-        """
+        return "\(name) **\(version.number) \(releaseStr)**(\(version.build)) vom \(date.germanFormatted)"
+    }
+
+    var detailURLString: String {
+        return links?.notes?.url.absoluteString ?? "Keine Detail-URL vorhanden"
     }
 }
