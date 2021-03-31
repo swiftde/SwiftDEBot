@@ -10,7 +10,6 @@ bot.editStatus(to: "", playing: "swiftc -Ounchecked")
 
 bot.onMessageCreate(
     .hello,
-    .hearts,
     .ping,
     .xcodeTypo,
     .xcodeLatest,
@@ -18,7 +17,6 @@ bot.onMessageCreate(
 )
 
 bot.onReactionAdd(
-    .heartsReaction,
     .this
 )
 
