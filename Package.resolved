@@ -2,7 +2,7 @@
   "object": {
     "pins": [
       {
-        "package": "SSCommonCrypto",
+        "package": "common-crypto-spm",
         "repositoryURL": "https://github.com/Azoy/common-crypto-spm.git",
         "state": {
           "branch": null,
@@ -38,7 +38,7 @@
         }
       },
       {
-        "package": "SSCZLib",
+        "package": "zlib-spm",
         "repositoryURL": "https://github.com/Azoy/zlib-spm.git",
         "state": {
           "branch": null,
