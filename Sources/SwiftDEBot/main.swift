@@ -10,6 +10,7 @@ bot.editStatus(to: "", playing: "swiftc -Ounchecked")
 
 bot.onMessageCreate(
     .hello,
+    .kompilat,
     .ping,
     .xcodeTypo,
     .xcodeLatest,
