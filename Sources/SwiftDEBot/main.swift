@@ -14,7 +14,8 @@ bot.onMessageCreate(
     .ping,
     .xcodeTypo,
     .xcodeLatest,
-    .swiftEvolution
+    .swiftEvolution,
+    .spaceBeforePunctuationMark
 )
 
 bot.onReactionAdd(
