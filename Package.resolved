@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "cows",
+        "repositoryURL": "https://github.com/AlwaysRightInstitute/cows.git",
+        "state": {
+          "branch": null,
+          "revision": "e83648f8265b7f233c6181421bb132c2b2693f4e",
+          "version": "1.0.10"
+        }
+      },
+      {
         "package": "Result",
         "repositoryURL": "https://github.com/antitypical/Result",
         "state": {
