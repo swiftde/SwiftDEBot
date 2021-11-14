@@ -73,6 +73,6 @@ fileprivate struct VaccinationResponse: Decodable {
 
 extension Double {
     var twoDecimals: String {
-        String(format: "%.2f", self)
+        return String(format: "%.2f", self)
     }
 }
