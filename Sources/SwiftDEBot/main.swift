@@ -10,13 +10,14 @@ bot.editStatus(to: "", playing: "swiftc -Ounchecked")
 
 bot.onMessageCreate(
     .hello,
+    .impfstatus,
     .kompilat,
     .ping,
     .xcodeTypo,
     .xcodeLatest,
+    .vaca,
     .swiftEvolution,
-    .spaceBeforePunctuationMark,
-    .vaca
+    .spaceBeforePunctuationMark
 )
 
 bot.onReactionAdd(
