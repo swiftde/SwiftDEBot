@@ -15,7 +15,8 @@ bot.onMessageCreate(
     .xcodeTypo,
     .xcodeLatest,
     .swiftEvolution,
-    .spaceBeforePunctuationMark
+    .spaceBeforePunctuationMark,
+    .vaca
 )
 
 bot.onReactionAdd(
