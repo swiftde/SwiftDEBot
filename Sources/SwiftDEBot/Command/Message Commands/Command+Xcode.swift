@@ -50,19 +50,14 @@ extension Command where Trigger == Message {
 
     fileprivate static func latestXcodeVersions(completion: @escaping (Result<[XcodeVersion], String>) -> Void) {
         let xcodeReleasesURL = URL(string: "https://xcodereleases.com/data.json")!
-        let task = URLSession.shared.dataTask(with: xcodeReleasesURL) { data, _, error in
-            guard error == nil, let data = data else {
-                completion(.failure(error?.localizedDescription ?? "keine Daten vorhanden"))
-                return
-            }
-            do {
-                let versions = try JSONDecoder().decode([XcodeVersion].self, from: data)
-                completion(.success(versions))
-            } catch {
-                completion(.failure(String(describing: error)))
+        HTTP.shared.get(url: xcodeReleasesURL) { (result: Result<[XcodeVersion], Error>) in
+            switch result {
+            case .failure(let error):
+                completion(.failure(error.localizedDescription))
+            case .success(let response):
+                completion(.success(response))
             }
         }
-        task.resume()
     }
 }
 

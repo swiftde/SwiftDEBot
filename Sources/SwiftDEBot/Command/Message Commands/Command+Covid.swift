@@ -13,35 +13,63 @@ extension Command where Trigger == Message {
             if query.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
                 query = "Deutschland"
             }
+            if query.lowercased() == "nrw" {
+                query = "Nordrhein-Westfalen"
+            }
 
-            bot.setTyping(for: message.channel.id)
-            getVaccinationData { result in
-                switch result {
-                case .failure(let error):
-                    bot.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel.id)
-                case .success(let response):
-                    let queryMatch = response.data.first { $0.name.lowercased() == query.lowercased() }?.description ?? "Ich habe leider keine aktuellen Daten für \(query) finden können."
-                    bot.send(queryMatch, to: message.channel.id)
-                }
+            if query == "top" {
+                postHighscores(bot: bot, message: message)
+            } else {
+                postSingleRegionStats(for: query, bot: bot, message: message)
             }
         }
     )
 
-    fileprivate static func getVaccinationData(completion: @escaping (Result<VaccinationResponse, String>) -> Void) {
-        let vaccinationDataURL = URL(string: "https://rki-vaccination-data.vercel.app/api/v2")!
-        let task = URLSession.shared.dataTask(with: vaccinationDataURL) { data, _, error in
-            guard error == nil, let data = data else {
-                completion(.failure(String(describing: error ?? "keine Daten vorhanden")))
-                return
-            }
-            do {
-                let vaccinationResponse = try JSONDecoder().decode(VaccinationResponse.self, from: data)
-                completion(.success(vaccinationResponse))
-            } catch {
-                completion(.failure(String(describing: error)))
+    fileprivate static func postSingleRegionStats(for region: String, bot: Sword, message: Message) {
+        bot.setTyping(for: message.channel.id)
+        getVaccinationData { result in
+            switch result {
+            case .failure(let error):
+                bot.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel.id)
+            case .success(let response):
+                let regionMatch = response.data.first { $0.name.lowercased() == region.lowercased() }?.description ?? "Ich habe leider keine aktuellen Daten für \(region) finden können."
+                bot.send(regionMatch, to: message.channel.id)
             }
         }
-        task.resume()
+    }
+
+    fileprivate static func postHighscores(bot: Sword, message: Message) {
+        bot.setTyping(for: message.channel.id)
+        getVaccinationData { result in
+            switch result {
+            case .failure(let error):
+                bot.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel.id)
+            case .success(let response):
+                let sortedStates = response.data
+                    .filter(\.isState)
+                    .sorted { $0.fullyVaccinated.quote > $1.fullyVaccinated.quote }
+
+                var response = "**Impfhighscores**\n```"
+                for (idx, state) in zip(sortedStates.indices, sortedStates) {
+                    let space = idx < 9 ? "  " : " "
+                    response += "\(idx+1).\(space)\(state.fullyVaccinated.quote.twoDecimals)% \(state.name)\n"
+                }
+                response += "```"
+                bot.send(response, to: message.channel.id)
+            }
+        }
+    }
+
+    fileprivate static func getVaccinationData(completion: @escaping (Result<VaccinationResponse, String>) -> Void) {
+        let vaccinationDataURL = URL(string: "https://rki-vaccination-data.vercel.app/api/v2")!
+        HTTP.shared.get(url: vaccinationDataURL) { (result: Result<VaccinationResponse, Error>) in
+            switch result {
+            case .failure(let error):
+                completion(.failure(error.localizedDescription))
+            case .success(let response):
+                completion(.success(response))
+            }
+        }
     }
 }
 
