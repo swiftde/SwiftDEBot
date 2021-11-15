@@ -30,9 +30,9 @@ class HTTP: NSObject {
 extension HTTP: URLSessionDelegate {
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         var credential: URLCredential? = nil
-        if let serverTrust = challenge.protectionSpace.serverTrust {
-            credential = URLCredential(trust: serverTrust)
-        }
+//        if let serverTrust = challenge.protectionSpace.serverTrust {
+//            credential = URLCredential(trust: serverTrust)
+//        }
         completionHandler(.useCredential, credential)
     }
 }
