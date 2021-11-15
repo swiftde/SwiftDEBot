@@ -46,7 +46,7 @@ extension Command where Trigger == Message {
                 bot.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel.id)
             case .success(let response):
                 let sortedStates = response.data
-                    .filter(\.isState)
+                    .filter { $0.isState }
                     .sorted { $0.fullyVaccinated.quote > $1.fullyVaccinated.quote }
 
                 var response = "**Impfhighscores**\n```"
