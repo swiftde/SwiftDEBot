@@ -2,12 +2,7 @@ import Foundation
 import Result
 
 class HTTP: NSObject {
-    var session: URLSession!
-
-    override init() {
-        super.init()
-        self.session = URLSession(configuration: .default, delegate: self, delegateQueue: .main)
-    }
+    lazy var session = URLSession(configuration: .default, delegate: self, delegateQueue: .main)
 
     static var shared = HTTP()
 
