@@ -50,7 +50,7 @@ extension Command where Trigger == Message {
 
     fileprivate static func latestXcodeVersions(completion: @escaping (Result<[XcodeVersion], String>) -> Void) {
         let xcodeReleasesURL = URL(string: "https://xcodereleases.com/data.json")!
-        HTTP.shared.get(url: xcodeReleasesURL) { (result: Result<[XcodeVersion], Error>) in
+        HTTP.shared.get(url: xcodeReleasesURL) { (result: Result<[XcodeVersion], HTTPError>) in
             switch result {
             case .failure(let error):
                 completion(.failure(error.localizedDescription))

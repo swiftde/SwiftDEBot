@@ -62,7 +62,7 @@ extension Command where Trigger == Message {
 
     fileprivate static func getVaccinationData(completion: @escaping (Result<VaccinationResponse, String>) -> Void) {
         let vaccinationDataURL = URL(string: "https://rki-vaccination-data.vercel.app/api/v2")!
-        HTTP.shared.get(url: vaccinationDataURL) { (result: Result<VaccinationResponse, Error>) in
+        HTTP.shared.get(url: vaccinationDataURL) { (result: Result<VaccinationResponse, HTTPError>) in
             switch result {
             case .failure(let error):
                 completion(.failure(error.localizedDescription))

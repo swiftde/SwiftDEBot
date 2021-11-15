@@ -8,18 +8,18 @@ class HTTP: NSObject {
 
     func get<Response>(
         url: URL,
-        completion: @escaping (Result<Response, Error>) -> Void
+        completion: @escaping (Result<Response, HTTPError>) -> Void
     ) where Response: Decodable {
         let task = self.session.dataTask(with: url) { data, _, error in
             guard error == nil, let data = data else {
-                completion(.failure(error!))
+                completion(.failure(.underlying(error!)))
                 return
             }
             do {
                 let response = try JSONDecoder().decode(Response.self, from: data)
                 completion(.success(response))
             } catch {
-                completion(.failure(error))
+                completion(.failure(.underlying(error)))
             }
         }
         task.resume()
@@ -35,4 +35,8 @@ extension HTTP: URLSessionDelegate {
         }
         completionHandler(.useCredential, credential)
     }
+}
+
+enum HTTPError: Error {
+    case underlying(Error)
 }
