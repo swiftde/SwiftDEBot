@@ -6,6 +6,12 @@ extension Command where Trigger == Message {
         "296369044775501824" // Fabian
     ]
 
+    fileprivate static let reactions = [
+        "⁉️",
+        "🙄",
+        "🤦",
+    ]
+
     static let spaceBeforePunctuationMark = Command(
         run: { bot, message in
             guard
@@ -16,10 +22,9 @@ extension Command where Trigger == Message {
                 return
             }
 
-            bot.send(
-                "Ey \(message.author?.mentionHandle ?? "du Dulli"), vor ein Satzzeichen gehört kein Leerzeichen. Wir sind hier nicht bei den Wilden! *slap*",
-                to: message.channel.id
-            )
+            for reaction in reactions {
+                bot.addReaction(reaction, to: message.id, in: message.channel.id)
+            }
         }
     )
 }
