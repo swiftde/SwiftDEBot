@@ -5,8 +5,8 @@ WORKDIR /app
 COPY . ./
 RUN swift build --configuration release
 
-# FROM swift:5.3-slim
 FROM swift:4
+RUN update-ca-certificates --fresh
 WORKDIR /app
 COPY --from=build /app/.build/release/SwiftDEBot .
 
