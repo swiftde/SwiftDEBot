@@ -13,6 +13,8 @@ struct SwiftEvolutionCommand: MessageCommand {
             return
         }
 
+        try await client.setTyping(in: message.channel_id)
+
         let proposals: [Proposal]
         do {
             proposals = try await self.getProposals()

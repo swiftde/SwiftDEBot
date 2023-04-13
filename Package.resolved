@@ -23,8 +23,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/MahdiBM/DiscordBM",
       "state" : {
-        "branch" : "main",
-        "revision" : "3fcd5fd0aa7468761d226d7eb1c871fe6c958870"
+        "revision" : "53e8bd10a4489cd5a8c2c7a47d8801e20a3df530"
       }
     },
     {
