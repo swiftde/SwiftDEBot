@@ -2,7 +2,7 @@ import DiscordBM
 import Foundation
 import FoundationBandAid
 
-struct XcodeTypoCommand: Command {
+struct XcodeTypoCommand: MessageCommand {
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         let content = message.content
         guard content.contains("XCode") || content.contains("xCode"),
@@ -14,9 +14,11 @@ struct XcodeTypoCommand: Command {
     }
 }
 
-struct XcodeLatestCommand: Command {
+struct XcodeLatestCommand: MessageCommand {
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content == "!xcode" else { return }
+
+        try await client.setTyping(in: message.channel_id)
 
         let versions: [XcodeVersion]
         do {

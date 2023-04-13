@@ -41,8 +41,14 @@ Task {
             guard !(message.author?.bot ?? false) else { return }
 
             Task {
-                for command in commands {
+                for command in messageCommands {
                     try? await command.run(client: bot.client, message: message)
+                }
+            }
+        case .messageReactionAdd(let reaction):
+            Task {
+                for command in reactionCommands {
+                    try? await command.run(client: bot.client, reaction: reaction)
                 }
             }
         default:
@@ -54,24 +60,3 @@ Task {
 }
 
 RunLoop.current.run()
-
-//let bot = Sword(token: token)
-//
-//bot.editStatus(to: "", playing: "swiftc -Ounchecked")
-//
-//bot.onMessageCreate(
-//    .hello,
-//    .impfstatus,
-//    .kompilat,
-//    .ping,
-//    .xcodeTypo,
-//    .xcodeLatest,
-//    .vaca,
-//    .swiftEvolution
-//)
-//
-//bot.onReactionAdd(
-//    .this
-//)
-//
-//bot.connect()

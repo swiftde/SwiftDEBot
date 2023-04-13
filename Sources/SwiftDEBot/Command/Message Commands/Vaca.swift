@@ -1,7 +1,7 @@
 import DiscordBM
 import cows
 
-struct CowsCommand: Command {
+struct CowsCommand: MessageCommand {
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content.starts(with: "!vaca") else { return }
 
