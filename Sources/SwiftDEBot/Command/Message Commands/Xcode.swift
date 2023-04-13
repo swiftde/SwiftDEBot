@@ -5,7 +5,7 @@ import FoundationBandAid
 struct XcodeTypoCommand: MessageCommand {
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         let content = message.content
-        guard content.contains("XCode") || content.contains("xCode"),
+        guard content.contains(" XCode") || content.contains(" xCode"),
             let handle = message.author?.mentionHandle
         else {
             return
