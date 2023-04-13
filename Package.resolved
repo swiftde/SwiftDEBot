@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "foundationbandaid",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mickeyl/FoundationBandAid",
+      "state" : {
+        "branch" : "master",
+        "revision" : "53f5e669bc9828bf8c8ecdd8da0c20bcb603658d"
+      }
+    },
+    {
       "identity" : "multipart-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/multipart-kit.git",
