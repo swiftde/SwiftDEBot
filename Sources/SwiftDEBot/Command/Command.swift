@@ -1,5 +1,5 @@
-import Sword
+import DiscordBM
 
-struct Command<Trigger> {
-    var run: (Sword, Trigger) -> Void
+protocol Command {
+    func run(client: DiscordClient, message: Gateway.MessageCreate) async throws
 }

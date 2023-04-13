@@ -1,23 +1,26 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.7
 
 import PackageDescription
 
 let package = Package(
     name: "SwiftDEBot",
+    platforms: [
+        .macOS(.v12),
+    ],
     dependencies: [
-        .package(url: "https://github.com/Azoy/Sword.git", from: "0.9.2"),
+        .package(url: "https://github.com/MahdiBM/DiscordBM", branch: "main"),
+        .package(url: "https://github.com/swift-server/async-http-client", from: "1.15.0"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.5.2"),
         .package(url: "https://github.com/AlwaysRightInstitute/cows.git", from: "1.0.0"),
-
-        // Remove me when upgrading to a more current version of Swift.
-        .package(url: "https://github.com/antitypical/Result", from: "5.0.0"),
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "SwiftDEBot",
             dependencies: [
-                "Sword",
+                "DiscordBM",
+                .product(name: "AsyncHTTPClient", package: "async-http-client"),
+                .product(name: "Logging", package: "swift-log"),
                 "cows",
-                "Result"
             ]),
     ]
 )
