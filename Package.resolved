@@ -1,61 +1,113 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "SSCommonCrypto",
-        "repositoryURL": "https://github.com/Azoy/common-crypto-spm.git",
-        "state": {
-          "branch": null,
-          "revision": "7e9904a0d0c0024a86ab6fe5698ffc8f7799efb4",
-          "version": "1.2.0"
-        }
-      },
-      {
-        "package": "cows",
-        "repositoryURL": "https://github.com/AlwaysRightInstitute/cows.git",
-        "state": {
-          "branch": null,
-          "revision": "e83648f8265b7f233c6181421bb132c2b2693f4e",
-          "version": "1.0.10"
-        }
-      },
-      {
-        "package": "Result",
-        "repositoryURL": "https://github.com/antitypical/Result",
-        "state": {
-          "branch": null,
-          "revision": "12920a5c2595926efab9274d6003e29f503dbb66",
-          "version": "5.0.0"
-        }
-      },
-      {
-        "package": "Starscream",
-        "repositoryURL": "https://github.com/Azoy/Starscream.git",
-        "state": {
-          "branch": null,
-          "revision": "a21fca8e9dc83cf3a88a3ba9be15ff17a7e4e8d6",
-          "version": "3.0.5"
-        }
-      },
-      {
-        "package": "Sword",
-        "repositoryURL": "https://github.com/Azoy/Sword.git",
-        "state": {
-          "branch": null,
-          "revision": "d8097bd5b3881d6d4bae4feebf005592f7ffa573",
-          "version": "0.9.2"
-        }
-      },
-      {
-        "package": "SSCZLib",
-        "repositoryURL": "https://github.com/Azoy/zlib-spm.git",
-        "state": {
-          "branch": null,
-          "revision": "f92fc0658af4cd9b11f233e9c02786ecbf75f1ee",
-          "version": "1.2.0"
-        }
+  "pins" : [
+    {
+      "identity" : "async-http-client",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-server/async-http-client.git",
+      "state" : {
+        "revision" : "864c8d9e0ead5de7ba70b61c8982f89126710863",
+        "version" : "1.15.0"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "cows",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AlwaysRightInstitute/cows.git",
+      "state" : {
+        "revision" : "e83648f8265b7f233c6181421bb132c2b2693f4e",
+        "version" : "1.0.10"
+      }
+    },
+    {
+      "identity" : "discordbm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MahdiBM/DiscordBM",
+      "state" : {
+        "revision" : "74b9878ff6c62cd7d56f51f3568f4766bdf408b6",
+        "version" : "1.0.0-beta.49"
+      }
+    },
+    {
+      "identity" : "multipart-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/multipart-kit.git",
+      "state" : {
+        "revision" : "3a31859efeb054cdcd407fe152802ddc5c58bbce",
+        "version" : "4.5.3"
+      }
+    },
+    {
+      "identity" : "swift-atomics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-atomics.git",
+      "state" : {
+        "revision" : "6c89474e62719ddcc1e9614989fff2f68208fe10",
+        "version" : "1.1.0"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "937e904258d22af6e447a0b72c0bc67583ef64a2",
+        "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
+        "version" : "1.5.2"
+      }
+    },
+    {
+      "identity" : "swift-nio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-nio.git",
+      "state" : {
+        "revision" : "9b2848d76f5caad08b97e71a04345aa5bdb23a06",
+        "version" : "2.49.0"
+      }
+    },
+    {
+      "identity" : "swift-nio-extras",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-nio-extras.git",
+      "state" : {
+        "revision" : "cc1e5275079380c859417dbea8588531f1a90ec3",
+        "version" : "1.18.0"
+      }
+    },
+    {
+      "identity" : "swift-nio-http2",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-nio-http2.git",
+      "state" : {
+        "revision" : "38feec96bcd929028939107684073554bf01abeb",
+        "version" : "1.25.2"
+      }
+    },
+    {
+      "identity" : "swift-nio-ssl",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-nio-ssl.git",
+      "state" : {
+        "revision" : "4fb7ead803e38949eb1d6fabb849206a72c580f3",
+        "version" : "2.23.0"
+      }
+    },
+    {
+      "identity" : "swift-nio-transport-services",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-nio-transport-services.git",
+      "state" : {
+        "revision" : "c0d9a144cfaec8d3d596aadde3039286a266c15c",
+        "version" : "1.15.0"
+      }
+    }
+  ],
+  "version" : 2
 }

@@ -1,8 +1,7 @@
-import Sword
+import DiscordBM
 
-extension User {
-    /// Use this to mention the user, evaluates to `"<@!\(self.id)>"`. No need for additional @s.
+extension PartialUser {
     var mentionHandle: String {
-        return "<@!\(self.id)>"
+        DiscordUtils.userMention(id: self.id)
     }
 }
