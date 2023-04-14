@@ -1,19 +1,25 @@
-name: Swift
+name: Swift Build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
-
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Build
-      run: swift build -v
-#     - name: Run tests
-#       run: swift test -v
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker container
+      run: |
+        docker pull swift:5.7
+
+    - name: Build SwiftDEBot
+      run: |
+        docker run --rm -v "$(pwd):/src" -w /src swift:5.7 swift build --configuration release
