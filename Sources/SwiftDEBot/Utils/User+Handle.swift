@@ -2,6 +2,6 @@ import DiscordBM
 
 extension PartialUser {
     var mentionHandle: String {
-        "<@!\(self.id)>"
+        DiscordUtils.userMention(id: self.id)
     }
 }
