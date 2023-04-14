@@ -1,6 +1,5 @@
 import DiscordBM
 import Foundation
-import FoundationBandAid
 
 struct XcodeTypoCommand: MessageCommand {
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
@@ -22,7 +21,7 @@ struct XcodeLatestCommand: MessageCommand {
 
         let versions: [XcodeVersion]
         do {
-            versions = try await self.latestXcodeVersions()
+            versions = try await httpClient.get("https://xcodereleases.com/data.json", response: [XcodeVersion].self)
         } catch {
             try await client.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel_id)
             return
@@ -48,12 +47,6 @@ struct XcodeLatestCommand: MessageCommand {
                 Mehr Infos hier: \(latest.detailURLString)
                 """, to: message.channel_id)
         }
-    }
-
-    fileprivate func latestXcodeVersions() async throws -> [XcodeVersion] {
-        let xcodeReleasesURL = URL(string: "https://xcodereleases.com/data.json")!
-        let (data, _) = try await URLSession.shared.data(from: xcodeReleasesURL)
-        return try JSONDecoder().decode([XcodeVersion].self, from: data)
     }
 }
 

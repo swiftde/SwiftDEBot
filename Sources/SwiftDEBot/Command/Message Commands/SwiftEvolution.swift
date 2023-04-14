@@ -1,6 +1,5 @@
 import DiscordBM
 import Foundation
-import FoundationBandAid
 
 struct SwiftEvolutionCommand: MessageCommand {
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
@@ -17,7 +16,8 @@ struct SwiftEvolutionCommand: MessageCommand {
 
         let proposals: [Proposal]
         do {
-            proposals = try await self.getProposals()
+            proposals = try await httpClient.get("https://download.swift.org/swift-evolution/proposals.json",
+                                                 response: [Proposal].self)
         } catch {
             try await client.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel_id)
             return
@@ -35,12 +35,6 @@ struct SwiftEvolutionCommand: MessageCommand {
 
         let joinedProposals = matchingQuery.map { $0.shortDescription }.joined(separator: "\n\n")
         try await client.send(joinedProposals, to: message.channel_id)
-    }
-
-    fileprivate func getProposals() async throws -> [Proposal] {
-        let proposalsURL = URL(string: "https://download.swift.org/swift-evolution/proposals.json")!
-        let (data, _) = try await URLSession.shared.data(from: proposalsURL)
-        return try JSONDecoder().decode([Proposal].self, from: data)
     }
 }
 
