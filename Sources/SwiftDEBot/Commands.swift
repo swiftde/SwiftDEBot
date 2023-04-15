@@ -1,12 +1,15 @@
 import DiscordBM
 
 let messageCommands: [MessageCommand] = [
+    HelpCommand(),
     PingCommand(),
     HalloCommand(),
-    CowsCommand(),
+
     XcodeTypoCommand(),
     XcodeLatestCommand(),
     SwiftEvolutionCommand(),
+
+    CowsCommand(),
 ]
 
 let reactionCommands: [ReactionCommand] = [

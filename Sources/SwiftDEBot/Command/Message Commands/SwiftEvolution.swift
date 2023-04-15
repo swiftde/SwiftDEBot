@@ -2,6 +2,8 @@ import DiscordBM
 import Foundation
 
 struct SwiftEvolutionCommand: MessageCommand {
+    let helpText = "`!se <query>`: Suche nach Swift Evolution proposals, entweder anhand einer Nummer oder eines Suchbegriffs."
+
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content.hasPrefix("!se") else { return }
         let query = message.content.components(separatedBy: " ")[1...].joined(separator: " ")
