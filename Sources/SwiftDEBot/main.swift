@@ -3,6 +3,16 @@ import DiscordBM
 import Foundation
 import Logging
 
+
+LoggingSystem.bootstrap { label in
+    var logHandler = StreamLogHandler.standardOutput(label: label)
+    #if DEBUG
+    logHandler.logLevel = .debug
+    #endif
+    return logHandler
+}
+
+
 let log = Logger(label: "swiftde.bot")
 
 guard
@@ -42,13 +52,21 @@ Task {
 
             Task {
                 for command in messageCommands {
-                    try? await command.run(client: bot.client, message: message)
+                    do {
+                        try await command.run(client: bot.client, message: message)
+                    } catch {
+                        log.error("Error during execution of \(type(of: command)): \(error.localizedDescription)")
+                    }
                 }
             }
         case .messageReactionAdd(let reaction):
             Task {
                 for command in reactionCommands {
-                    try? await command.run(client: bot.client, reaction: reaction)
+                    do {
+                        try await command.run(client: bot.client, reaction: reaction)
+                    } catch {
+                        log.error("Error during execution of \(type(of: command)): \(error.localizedDescription)")
+                    }
                 }
             }
         default:

@@ -1,5 +1,6 @@
 import DiscordBM
 import Foundation
+import Algorithms
 
 struct SwiftEvolutionCommand: MessageCommand {
     let helpText = "`!se <query>`: Suche nach Swift Evolution proposals, entweder anhand einer Nummer oder eines Suchbegriffs."
@@ -29,14 +30,26 @@ struct SwiftEvolutionCommand: MessageCommand {
             try await client.send("Auf swift.org sind keine Proposals mehr gelistet 🤔", to: message.channel_id)
             return
         }
+
         let matchingQuery = proposals.filter { $0.matches(query: query) }
+        log.debug("\(matchingQuery.count) SE proposal(s) matching query '\(query)'")
+
         guard matchingQuery.count > 0 else {
             try await client.send("Dazu habe ich leider kein passendes Proposal gefunden 🕵️", to: message.channel_id)
             return
         }
+        guard matchingQuery.count < 12 else {
+            try await client.send("""
+            Zu der Suche gibt's mehr als ein Dutzend Proposals. Versuch's lieber mit einem etwas genauerem Suchbegriff.
+            """, to: message.channel_id)
+            return
+        }
 
-        let joinedProposals = matchingQuery.map { $0.shortDescription }.joined(separator: "\n\n")
-        try await client.send(joinedProposals, to: message.channel_id)
+        let proposalDescriptions = matchingQuery.map { $0.shortDescription }
+
+        for chunk in proposalDescriptions.chunks(ofCount: 4) {
+            try await client.send(chunk.joined(separator: "\n\n"), to: message.channel_id)
+        }
     }
 }
 
