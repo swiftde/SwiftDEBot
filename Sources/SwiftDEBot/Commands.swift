@@ -4,6 +4,7 @@ let messageCommands: [MessageCommand] = [
     XcodeTypoCommand(),
     XcodeLatestCommand(),
     SwiftEvolutionCommand(),
+    AppleStatusCommand(),
 
     CowsCommand(),
 
