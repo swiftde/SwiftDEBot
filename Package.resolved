@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "packagebuildinfo",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DimaRU/PackageBuildInfo.git",
+      "state" : {
+        "revision" : "7fe63ad12b50bad5d86e6abaef5a944f931ce765",
+        "version" : "1.0.1"
+      }
+    },
+    {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-algorithms.git",

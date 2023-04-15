@@ -44,6 +44,8 @@ let bot = BotGatewayManager(
     ]
 )
 
+log.info("Starting with version: \(PackageBuild.info.describe)")
+
 Task {
     await bot.addEventHandler { event in
         switch event.data {
