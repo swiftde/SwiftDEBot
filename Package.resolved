@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "shell",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/helje5/Shell.git",
+      "state" : {
+        "revision" : "9982634c51b506d42fcb11b1c85e7ccc145679bd",
+        "version" : "0.1.4"
+      }
+    },
+    {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-algorithms.git",

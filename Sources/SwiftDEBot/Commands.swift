@@ -9,8 +9,8 @@ let messageCommands: [MessageCommand] = [
 
     HelpCommand(),
     VersionCommand(),
+    UptimeCommand(),
     PingCommand(),
-    HalloCommand(),
 ]
 
 let reactionCommands: [ReactionCommand] = [
