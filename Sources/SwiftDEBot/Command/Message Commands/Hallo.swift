@@ -1,6 +1,8 @@
 import DiscordBM
 
 struct HalloCommand: MessageCommand {
+    let helpText = "`!hallo`: Hallo! 👋"
+
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content == "!hallo" else { return }
         if let handle = message.author?.mentionHandle {

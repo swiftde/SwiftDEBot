@@ -2,6 +2,8 @@ import DiscordBM
 import Foundation
 
 struct XcodeTypoCommand: MessageCommand {
+    let helpText = ""
+
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         let content = message.content
         guard content.contains(" XCode") || content.contains(" xCode"),
@@ -14,6 +16,8 @@ struct XcodeTypoCommand: MessageCommand {
 }
 
 struct XcodeLatestCommand: MessageCommand {
+    let helpText = "`!xcode`: Was ist die aktuellste Version von Xcode?"
+
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content == "!xcode" else { return }
 
