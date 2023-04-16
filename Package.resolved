@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "matchable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Matchable.git",
+      "state" : {
+        "revision" : "d53e807009960aafbd54f6229c2542f906628b38",
+        "version" : "1.0.7"
+      }
+    },
+    {
       "identity" : "multipart-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/multipart-kit.git",
@@ -37,12 +46,12 @@
       }
     },
     {
-      "identity" : "packagebuildinfo",
+      "identity" : "runner",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/DimaRU/PackageBuildInfo.git",
+      "location" : "https://github.com/elegantchaos/Runner.git",
       "state" : {
-        "revision" : "7fe63ad12b50bad5d86e6abaef5a944f931ce765",
-        "version" : "1.0.1"
+        "revision" : "65420eb4e534a58c8fb1bf18e344bc86edb42c65",
+        "version" : "1.3.2"
       }
     },
     {
@@ -142,6 +151,24 @@
       "state" : {
         "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
         "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "versionator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Versionator.git",
+      "state" : {
+        "revision" : "d7bf7747ae277f6a5cd3193806262160d579f0cc",
+        "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "xctestextensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/XCTestExtensions.git",
+      "state" : {
+        "revision" : "39694671be8bea1ab0bbd87114705b2a92567a8e",
+        "version" : "1.5.0"
       }
     }
   ],

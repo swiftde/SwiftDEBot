@@ -5,6 +5,6 @@ struct VersionCommand: MessageCommand {
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content == "!version" else { return }
-        try await client.send(PackageBuild.info.describe, to: message.channel_id)
+        try await client.send(CurrentVersion.git, to: message.channel_id)
     }
 }
