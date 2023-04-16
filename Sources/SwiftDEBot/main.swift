@@ -1,17 +1,32 @@
 import AsyncHTTPClient
 import DiscordBM
+import DiscordLogger
 import Foundation
 import Logging
 
+let httpClient = HTTPClient(eventLoopGroupProvider: .createNew)
 
+DiscordGlobalConfiguration.logManager = DiscordLogManager(httpClient: httpClient)
+
+// This feels unecessarily complex...
 LoggingSystem.bootstrap { label in
-    var logHandler = StreamLogHandler.standardOutput(label: label)
+    var streamLogHandler = StreamLogHandler.standardOutput(label: label)
+    let logHandler: LogHandler
+    if let discordLogURL = ProcessInfo.processInfo.environment["DISCORD_LOGS_WEBHOOK_URL"] {
+        logHandler = DiscordLogHandler.multiplexLogHandler(
+            label: label,
+            address: try! .url(discordLogURL),
+            makeMainLogHandler: { _, _ in
+                streamLogHandler
+            })
+    } else {
+        logHandler = streamLogHandler
+    }
     #if DEBUG
-    logHandler.logLevel = .debug
+        streamLogHandler.logLevel = .debug
     #endif
     return logHandler
 }
-
 
 let log = Logger(label: "swiftde.bot")
 
@@ -21,8 +36,6 @@ guard
 else {
     fatalError("Necessary env vars not found, please set DISCORD_TOKEN and/or DISCORD_APP_ID.")
 }
-
-let httpClient = HTTPClient(eventLoopGroupProvider: .createNew)
 
 let bot = BotGatewayManager(
     eventLoopGroup: httpClient.eventLoopGroup,
@@ -44,7 +57,7 @@ let bot = BotGatewayManager(
     ]
 )
 
-log.info("Starting with version: \(CurrentVersion.git)")
+log.info("Starting with version \(CurrentVersion.git)")
 
 Task {
     await bot.addEventHandler { event in
