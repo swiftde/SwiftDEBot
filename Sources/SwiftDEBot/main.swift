@@ -70,7 +70,7 @@ Task {
                     do {
                         try await command.run(client: bot.client, message: message)
                     } catch {
-                        log.error("Error during execution of \(type(of: command)): \(error.localizedDescription)")
+                        log.error("Error during execution of \(type(of: command)): \(error)")
                     }
                 }
             }
@@ -80,7 +80,7 @@ Task {
                     do {
                         try await command.run(client: bot.client, reaction: reaction)
                     } catch {
-                        log.error("Error during execution of \(type(of: command)): \(error.localizedDescription)")
+                        log.error("Error during execution of \(type(of: command)): \(error)")
                     }
                 }
             }
