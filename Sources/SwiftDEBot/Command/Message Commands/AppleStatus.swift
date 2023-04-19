@@ -1,11 +1,12 @@
 import DiscordBM
 
 struct AppleStatusCommand: MessageCommand {
-    let helpText = "`!applestatus` oder `!applestatus <query>`: Gibt aus ob incidents bei Apple-Diensten bekannt sind. Wahlweise mit Filter für spezifische Dienste, e.g. 'iCloud Mail'."
+    let helpText =
+        "`!applestatus` oder `!applestatus <query>`: Gibt aus ob incidents bei Apple-Diensten bekannt sind. Wahlweise mit Filter für spezifische Dienste, e.g. 'iCloud Mail'."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content.hasPrefix("!applestatus") else { return }
-        let serviceQuery = message.content.components(separatedBy: " ")[1...].joined(separator: " ")
+        let serviceQuery = message.content.queryString ?? ""
 
         log.debug("!applestatus '\(serviceQuery)'")
 
@@ -15,7 +16,8 @@ struct AppleStatusCommand: MessageCommand {
             "https://www.apple.com/support/systemstatus/data/system_status_en_US.js", response: StatusResponse.self)
 
         guard serviceQuery != "-list" else {
-            try await client.send(serviceStatuses.services.map(\.serviceName).joined(separator: ", "), to: message.channel_id)
+            try await client.send(
+                serviceStatuses.services.map(\.serviceName).joined(separator: ", "), to: message.channel_id)
             return
         }
 
@@ -27,7 +29,11 @@ struct AppleStatusCommand: MessageCommand {
         }
 
         guard !affectedServices.isEmpty else {
-            try await client.send("Dazu sind mir keine Statusmeldungen bekannt.", to: message.channel_id)
+            if serviceQuery == "" {
+                try await client.send("Mir sind keine Statusmeldungen bekannt.", to: message.channel_id)
+            } else {
+                try await client.send("Dazu sind mir keine Statusmeldungen bekannt.", to: message.channel_id)
+            }
             return
         }
 
@@ -39,7 +45,7 @@ struct AppleStatusCommand: MessageCommand {
     }
 }
 
-fileprivate struct StatusResponse: Decodable {
+private struct StatusResponse: Decodable {
     let services: [ServiceStatus]
 
     struct ServiceStatus: Decodable {

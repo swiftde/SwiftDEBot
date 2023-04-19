@@ -39,16 +39,16 @@ struct XcodeLatestCommand: MessageCommand {
             try await client.send(
                 """
                 Das aktuellste Release ist \(latest.shortDescription)
-                Mehr Infos hier: \(latest.detailURLString)
+                <\(latest.detailURLString)>
 
                 Das letzte **stabile** Release ist \(latestStable.shortDescription)
-                Mehr Infos hier: \(latestStable.detailURLString)
+                <\(latestStable.detailURLString)>
                 """, to: message.channel_id)
         } else {
             try await client.send(
                 """
                 Das aktuellste Release von Xcode ist \(latest.shortDescription)
-                Mehr Infos hier: \(latest.detailURLString)
+                <\(latest.detailURLString)>
                 """, to: message.channel_id)
         }
     }
