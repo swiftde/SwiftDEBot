@@ -5,6 +5,7 @@ let messageCommands: [MessageCommand] = [
     XcodeLatestCommand(),
     SwiftEvolutionCommand(),
     AppleStatusCommand(),
+    SPICommand(),
 
     CowsCommand(),
 
@@ -15,5 +16,5 @@ let messageCommands: [MessageCommand] = [
 ]
 
 let reactionCommands: [ReactionCommand] = [
-    ThisCommand(),
+    ThisCommand()
 ]
