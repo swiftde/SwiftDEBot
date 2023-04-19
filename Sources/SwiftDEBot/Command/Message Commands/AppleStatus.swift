@@ -5,7 +5,7 @@ struct AppleStatusCommand: MessageCommand {
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content.hasPrefix("!applestatus") else { return }
-        let serviceQuery = message.content.components(separatedBy: " ")[1...].joined(separator: " ")
+        let serviceQuery = message.content.queryString ?? ""
 
         log.debug("!applestatus '\(serviceQuery)'")
 

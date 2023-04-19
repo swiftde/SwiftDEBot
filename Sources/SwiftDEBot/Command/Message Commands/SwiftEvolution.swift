@@ -7,8 +7,7 @@ struct SwiftEvolutionCommand: MessageCommand {
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content.hasPrefix("!se") else { return }
-        let query = message.content.components(separatedBy: " ")[1...].joined(separator: " ")
-        guard query.trimmingCharacters(in: .whitespacesAndNewlines) != "" else {
+        guard let query = message.content.queryString else {
             try await client.send(
                 "Ich weiß nicht wonach ich suchen soll. Bitte schreib' eine Nachricht wie `!se async`.",
                 to: message.channel_id)
