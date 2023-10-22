@@ -25,7 +25,7 @@ struct SummarizeCommand: MessageCommand {
 
         try await client.setTyping(in: message.channel_id)
 
-        guard let encodedURL = url.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+        guard let encodedURL = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             log.error("Unable to URL encode \(url)")
             return
         }
@@ -56,15 +56,11 @@ struct SummarizeCommand: MessageCommand {
 }
 
 private extension String {
-    var firstURL: URL? {
-        var foundURL: URL?
-        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        detector?.enumerateMatches(in: self, options: [], range: .init(location: 0, length: self.utf16.count), using: { (result, _, _) in
-            if let match = result, let url = match.url {
-                foundURL = url
-            }
-        })
-        return foundURL
+    var firstURL: String? {
+        if let found = self.firstMatch(of: #/(https?://\S+)/#) {
+            return String(found.output.1)
+        }
+        return nil
     }
 }
 
