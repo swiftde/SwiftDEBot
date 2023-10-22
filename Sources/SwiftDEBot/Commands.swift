@@ -6,6 +6,7 @@ let messageCommands: [MessageCommand] = [
     SwiftEvolutionCommand(),
     AppleStatusCommand(),
     SPICommand(),
+    SummarizeCommand(),
 
     CowsCommand(),
 
