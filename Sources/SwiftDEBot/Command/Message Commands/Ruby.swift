@@ -12,6 +12,6 @@ struct RubyCommand: MessageCommand {
             return
         }
         try await client.addReaction(
-            .guildEmoji(name: "fckrby", id: "1174327414470496276"), to: reaction.message_id, in: reaction.channel_id)
+            .guildEmoji(name: "fckrby", id: "1174327414470496276"), to: message.message_id, in: message.channel_id)
     }
 }
