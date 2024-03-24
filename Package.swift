@@ -1,11 +1,11 @@
-// swift-tools-version:5.7
+// swift-tools-version:5.9
 
 import PackageDescription
 
 let package = Package(
     name: "SwiftDEBot",
     platforms: [
-        .macOS(.v12),
+        .macOS(.v13),
     ],
     dependencies: [
         .package(url: "https://github.com/MahdiBM/DiscordBM", exact: "1.0.0-beta.49"),

@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Docker container
-      run: |
-        docker pull swift:5.7
+      - name: Set up Docker container
+        run: |
+          docker pull swift:5.9
 
-    - name: Build SwiftDEBot
-      run: |
-        docker run --rm -v "$(pwd):/src" -w /src swift:5.7 swift build --configuration release
+      - name: Build SwiftDEBot
+        run: |
+          docker run --rm -v "$(pwd):/src" -w /src swift:5.9 swift build --configuration release
