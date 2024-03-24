@@ -11,7 +11,6 @@ let messageCommands: [MessageCommand] = [
     CowsCommand(),
 
     HelpCommand(),
-    VersionCommand(),
     UptimeCommand(),
     PingCommand(),
 ]
