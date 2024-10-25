@@ -34,7 +34,7 @@ struct SummarizeCommand: MessageCommand {
                     )
                 case .emptySummary:
                     try await client.send(
-                        "Das kann ich leider nicht zusammenfassen 🫥: \(error)",
+                        "Das kann ich leider nicht zusammenfassen 🫥",
                         to: message.channel_id
                     )
                 }
@@ -101,7 +101,7 @@ struct SummarizeCommand: MessageCommand {
         let response = try await httpClient.post(
             "https://api.openai.com/v1/chat/completions",
             headers: ["Authorization": "Bearer \(apiToken)"],
-            body: OpenAIRequest(message: messageContent),
+            body: try OpenAIRequest(message: messageContent),
             response: OpenAIResponse.self
         )
 
@@ -157,7 +157,7 @@ private struct OpenAIRequest: Encodable {
     let messages: [Message]
     let temperature: Double
 
-    init(message: Gateway.MessageCreate) {
+    init(message: Gateway.MessageCreate) throws {
         self.model = "gpt-4o-mini"
 
         var content = message.attachments.compactMap { attachment -> Message.ContentUnion.ContentElement? in
@@ -167,6 +167,10 @@ private struct OpenAIRequest: Encodable {
 
         if !message.content.isEmpty {
             content.append(.init(type: "text", text: message.content, image_url: nil))
+        }
+
+        guard !content.isEmpty else {
+            throw SummaryError.emptySummary
         }
 
         self.messages = [
