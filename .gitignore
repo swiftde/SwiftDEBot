@@ -4,3 +4,4 @@
 /*.xcodeproj
 xcuserdata/
 .env.local
+.vscode
