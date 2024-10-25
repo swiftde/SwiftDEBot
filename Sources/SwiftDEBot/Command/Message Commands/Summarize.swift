@@ -176,7 +176,7 @@ private struct OpenAIRequest: Encodable {
         self.messages = [
             .init(
                 role: "system",
-                content: .string("Du bist ein Assistent, der Text und Bildinhalte zusammenfasst. Bitte schreibe eine kurze Zusammenfassung für die folgende Nachricht, bestehend entweder aus Text, Bild oder beidem. Falls beides, dann bezieht sich der Text zwar vermutlich auf das Bild, die Zusammenfassung des Bildinhalts hat aber Vorrang.")
+                content: .string("Du bist ein Assistent, der Text und Bildinhalte zusammenfasst. Bitte schreibe eine kurze Zusammenfassung für die folgende Nachricht, bestehend entweder aus Text, Bild oder beidem. Falls beides, dann bezieht sich der Text zwar vermutlich auf das Bild, die Zusammenfassung des Bildinhalts hat aber Vorrang. Die Zusammenfassung muss unabhängig von der Sprache des ursprünglichen Inhalts auf Deutsch sein.")
             ),
             .init(role: "user", content: .contentElementArray(content))
         ]
