@@ -6,7 +6,8 @@ struct TypoCommand: MessageCommand {
 
     let trigger: [String: [String]] = [
         "iPhone": ["Iphone", "ipPhone", "IPhone", "IFöhn"],
-        "iPad": ["IPad", "Ipad"]
+        "iPad": ["IPad", "Ipad"],
+        "Xcode": ["XCode", "xCode"]
     ]
     
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
