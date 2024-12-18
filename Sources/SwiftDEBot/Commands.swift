@@ -14,8 +14,7 @@ let messageCommands: [MessageCommand] = [
     UptimeCommand(),
     PingCommand(),
     
-    iPhoneTypoCommand(),
-    iPadTypoCommand(),
+    TypoCommand(),
 ]
 
 let reactionCommands: [ReactionCommand] = [
