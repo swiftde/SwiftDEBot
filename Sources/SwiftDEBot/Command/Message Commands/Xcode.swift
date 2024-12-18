@@ -1,20 +1,6 @@
 import DiscordBM
 import Foundation
 
-struct XcodeTypoCommand: MessageCommand {
-    let helpText = ""
-
-    func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        let content = message.content
-        guard content.contains("XCode") || content.contains("xCode"),
-            let handle = message.author?.mentionHandle
-        else {
-            return
-        }
-        try await client.send("Psst \(handle), das schreibt sich Xcode.", to: message.channel_id)
-    }
-}
-
 struct XcodeLatestCommand: MessageCommand {
     let helpText = "`!xcode`: Was ist die aktuellste Version von Xcode?"
 
