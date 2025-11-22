@@ -17,5 +17,5 @@ let messageCommands: [MessageCommand] = [
 ]
 
 let reactionCommands: [ReactionCommand] = [
-    ThisCommand()
+    AnimatedEmojiCommand()
 ]
