@@ -23,7 +23,7 @@ Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `d
 
 ## Environment
 
-`DISCORD_TOKEN` and `DISCORD_APP_ID` are required; the bot exits without them. `DISCORD_LOGS_WEBHOOK_URL` additionally forwards logs to a Discord webhook. `!summarize` needs `KAGI_API_TOKEN` for links and `OPENROUTER_API_KEY` for messages and images; it reports a missing token in the channel instead of failing at startup.
+`DISCORD_TOKEN` and `DISCORD_APP_ID` are required; the bot exits without them. `DISCORD_LOGS_WEBHOOK_URL` additionally forwards logs to a Discord webhook. `!summarize` needs `KAGI_API_TOKEN` for links and `OPENROUTER_API_KEY` for messages and images. `!factcheck` needs `OPENROUTER_API_KEY` and lets the model search the web through OpenRouter's web search tool, which costs extra per search. Both report a missing token in the channel instead of failing at startup.
 
 ## Architecture
 
@@ -36,4 +36,4 @@ Adding a command means:
 
 `helpText` on a message command feeds `!help`. An empty string hides the command from it.
 
-Shared helpers live in `Utils/`. `DiscordClient` extensions provide `send`, `addReaction` and `setTyping`. `HTTPClient` extensions provide `get`/`post` that decode JSON responses and throw on non-200 status. A global `httpClient` and `log` are defined in `main.swift` and used directly by commands. `String` helpers include `maxMessageLengthChunks()` for splitting output to Discord's message length limit.
+Shared helpers live in `Utils/`. `DiscordClient` extensions provide `send`, `addReaction` and `setTyping`. LLM output goes through `sendModelOutput`, which disables pings and link previews. `HTTPClient` extensions provide `get`/`post` that decode JSON responses and throw on non-200 status, and `openRouterCompletion` for OpenRouter chat completions. A global `httpClient` and `log` are defined in `main.swift` and used directly by commands. `String` helpers include `maxMessageLengthChunks()` for splitting output to Discord's message length limit.

@@ -12,7 +12,7 @@ struct SummarizeCommand: MessageCommand {
     do {
       let summary = try await generateSummary(for: message)
       for chunk in summary.maxMessageLengthChunks() {
-        try await client.send(chunk, to: message.channel_id)
+        try await client.sendModelOutput(chunk, to: message.channel_id)
       }
     } catch let error as SummaryError {
       do {
@@ -27,7 +27,7 @@ struct SummarizeCommand: MessageCommand {
             "Schicke bitte `!summarize` als Reply auf eine Nachricht.",
             to: message.channel_id
           )
-        case .brokenURL, .missingKagiToken, .missingOpenRouterKey:
+        case .brokenURL, .missingKagiToken:
           try await client.send(
             "💀 \(error)",
             to: message.channel_id
@@ -41,6 +41,8 @@ struct SummarizeCommand: MessageCommand {
       } catch {
         log.error("Failure to send message: \(error)")
       }
+    } catch OpenRouterError.missingAPIKey {
+      try await client.send("💀 OPENROUTER_API_KEY fehlt", to: message.channel_id)
     } catch let error {
       log.error("Failure to send message: \(error)")
     }
@@ -87,27 +89,36 @@ struct SummarizeCommand: MessageCommand {
   func summarize(messageContent: Gateway.MessageCreate) async throws -> String {
     log.info("Summarizing message from \(messageContent.author?.mentionHandle ?? "unknown user")")
 
-    guard let apiToken = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"] else {
-      log.error("Necessary env var not found, please set OPENROUTER_API_KEY.")
-      throw SummaryError.missingOpenRouterKey
-    }
-
     guard messageContent.content.count >= 500 || !messageContent.attachments.isEmpty else {
       throw SummaryError.contentTooShort
     }
 
-    let response = try await httpClient.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      headers: ["Authorization": "Bearer \(apiToken)"],
-      body: try ChatCompletionRequest(message: messageContent),
-      response: ChatCompletionResponse.self
-    )
-
-    guard let summary = response.choices.first else {
+    var content = ChatCompletionRequest.Message.ContentUnion.ContentElement.images(of: messageContent)
+    if !messageContent.content.isEmpty {
+      content.append(.text(messageContent.content))
+    }
+    guard !content.isEmpty else {
       throw SummaryError.emptySummary
     }
 
-    return summary.message.content
+    let request = ChatCompletionRequest(
+      messages: [
+        .init(
+          role: "system",
+          content: .string(
+            "Du bist ein Assistent, der Text und Bildinhalte zusammenfasst. Bitte schreibe eine kurze Zusammenfassung für die folgende Nachricht, bestehend entweder aus Text, Bild oder beidem. Falls beides, dann bezieht sich der Text zwar vermutlich auf das Bild, die Zusammenfassung des Bildinhalts hat aber Vorrang. Die Zusammenfassung muss unabhängig von der Sprache des ursprünglichen Inhalts auf Deutsch sein."
+          )
+        ),
+        .init(role: "user", content: .contentElementArray(content)),
+      ],
+      temperature: 0.7
+    )
+
+    guard let summary = try await httpClient.openRouterCompletion(request) else {
+      throw SummaryError.emptySummary
+    }
+
+    return summary
   }
 }
 
@@ -116,7 +127,6 @@ enum SummaryError: Error {
   case noReply
   case brokenURL
   case missingKagiToken
-  case missingOpenRouterKey
   case emptySummary
 }
 
@@ -134,87 +144,5 @@ private struct KagiResponse: Decodable {
 
   struct ResponseData: Decodable {
     let output: String
-  }
-}
-
-private struct ChatCompletionResponse: Decodable {
-  let choices: [Choice]
-
-  struct Choice: Decodable {
-    let message: Message
-
-    struct Message: Decodable {
-      let role, content: String
-    }
-  }
-}
-
-private struct ChatCompletionRequest: Encodable {
-  let model: String
-  let messages: [Message]
-  let temperature: Double
-
-  init(message: Gateway.MessageCreate) throws {
-    self.model = "z-ai/glm-5.3-flash"
-
-    var content = message.attachments.compactMap { attachment -> Message.ContentUnion.ContentElement? in
-      guard let contentType = attachment.content_type, contentType.starts(with: "image/") else { return nil }
-      return .init(type: "image_url", text: nil, imageURL: .init(url: attachment.url))
-    }
-
-    if !message.content.isEmpty {
-      content.append(.init(type: "text", text: message.content, imageURL: nil))
-    }
-
-    guard !content.isEmpty else {
-      throw SummaryError.emptySummary
-    }
-
-    self.messages = [
-      .init(
-        role: "system",
-        content: .string(
-          "Du bist ein Assistent, der Text und Bildinhalte zusammenfasst. Bitte schreibe eine kurze Zusammenfassung für die folgende Nachricht, bestehend entweder aus Text, Bild oder beidem. Falls beides, dann bezieht sich der Text zwar vermutlich auf das Bild, die Zusammenfassung des Bildinhalts hat aber Vorrang. Die Zusammenfassung muss unabhängig von der Sprache des ursprünglichen Inhalts auf Deutsch sein."
-        )
-      ),
-      .init(role: "user", content: .contentElementArray(content)),
-    ]
-    self.temperature = 0.7
-  }
-
-  struct Message: Encodable {
-    let role: String
-    let content: ContentUnion
-
-    enum ContentUnion: Encodable {
-      case contentElementArray([ContentElement])
-      case string(String)
-
-      struct ContentElement: Encodable {
-        // This could likely be more sensibly represented as a union type, but eh... 🤷
-        let type: String
-        let text: String?
-        let imageURL: ImageURL?
-
-        enum CodingKeys: String, CodingKey {
-          case type, text
-          case imageURL = "image_url"
-        }
-
-        struct ImageURL: Encodable {
-          let url: String
-        }
-      }
-
-      func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .string(let stringValue):
-          try container.encode(stringValue)
-        case .contentElementArray(let contentElements):
-          try container.encode(contentElements)
-        }
-      }
-    }
   }
 }

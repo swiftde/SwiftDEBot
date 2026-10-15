@@ -6,6 +6,22 @@ extension DiscordClient {
     try await self.createMessage(channelId: channelID, payload: .init(content: message))
   }
 
+  /// Sends text written by a model. It may repeat mentions from the chat it was given, so it must not ping anyone. Link
+  /// previews are hidden because a few cited sources would otherwise bury the answer.
+  @discardableResult
+  func sendModelOutput(_ message: String, to channelID: String) async throws
+    -> DiscordClientResponse<DiscordChannel.Message>
+  {
+    try await self.createMessage(
+      channelId: channelID,
+      payload: .init(
+        content: message,
+        allowed_mentions: .init(parse: [], roles: [], users: [], replied_user: false),
+        flags: [.suppressEmbeds]
+      )
+    )
+  }
+
   @discardableResult
   func addReaction(_ emoji: Reaction, to messageID: String, in channelID: String) async throws -> DiscordHTTPResponse {
     try await self.addOwnMessageReaction(channelId: channelID, messageId: messageID, emoji: emoji)
