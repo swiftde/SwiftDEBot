@@ -5,7 +5,7 @@ struct SummarizeCommand: MessageCommand {
     let helpText = "`!summarize`: Fasse einen Link, eine Nachricht oder Bilder zusammen."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        guard message.content == "!summarize" else { return }
+        guard message.content.invocation(of: "!summarize") != nil else { return }
 
         try await client.setTyping(in: message.channel_id)
 

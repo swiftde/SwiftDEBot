@@ -3,7 +3,6 @@ import Testing
 
 @testable import SwiftDEBot
 
-private let commandGen = Gen.lowercaseLetter.string(of: 1...10).map { "!" + $0 }
 private let wordGen = Gen.letterOrNumber.string(of: 1...12)
 private let blankGen = Gen<Character?>
     .element(of: [" ", "\t", "\n"] as [Character])
@@ -32,51 +31,6 @@ private func expectValidChunks(_ chunks: [String], of input: String, maxChars: I
         #expect(chunk.contains { !$0.isWhitespace }, "empty or whitespace-only chunk in \(chunks)")
     }
     #expect(nonWhitespace(chunks.joined()) == nonWhitespace(input), "content lost or reordered")
-}
-
-@Suite struct QueryStringTests {
-    @Test func commandWithoutArgumentIsNil() {
-        #expect("!vaca".queryString == nil)
-    }
-
-    @Test func commandFollowedOnlyByWhitespaceIsNil() {
-        #expect("!vaca ".queryString == nil)
-        #expect("!vaca    ".queryString == nil)
-        #expect("!vaca \n\t ".queryString == nil)
-    }
-
-    @Test func returnsArgumentAfterCommand() {
-        #expect("!vaca some query".queryString == "some query")
-        #expect("!vaca query".queryString == "query")
-    }
-
-    @Test func trimsWhitespaceAroundArgument() {
-        #expect("!vaca    some query   ".queryString == "some query")
-        #expect("!vaca some query\n".queryString == "some query")
-    }
-
-    @Test func keepsInnerWhitespaceOfArgument() {
-        #expect("!vaca a  b   c".queryString == "a  b   c")
-    }
-
-    @Test func anyCommandWithWhitespaceOnlyTailIsNil() async {
-        await propertyCheck(input: commandGen, blankGen) { command, blank in
-            #expect((command + blank).queryString == nil)
-        }
-    }
-
-    @Test func anyCommandReturnsItsTrimmedArgument() async {
-        await propertyCheck(
-            input: commandGen,
-            wordGen.array(of: 1...6),
-            Gen.int(in: 1...3).array(of: 1...6),
-            blankGen
-        ) { command, args, gaps, trailing in
-            let argument = joined(args, gaps: gaps)
-            let message = command + String(repeating: " ", count: gaps[0]) + argument + trailing
-            #expect(message.queryString == argument)
-        }
-    }
 }
 
 @Suite struct MaxMessageLengthChunksTests {

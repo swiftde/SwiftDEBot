@@ -27,7 +27,7 @@ Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `d
 
 ## Architecture
 
-`main.swift` sets up logging and the gateway connection, then dispatches every gateway event to all registered commands. Commands do not register triggers. Each command receives every non-bot message (or every added reaction) and decides itself whether to act, usually with a `guard` on `message.content`. Commands run sequentially per event, and an error in one is logged without stopping the others.
+`main.swift` sets up logging and the gateway connection, then dispatches every gateway event to all registered commands. Commands do not register triggers. Each command receives every non-bot message (or every added reaction) and decides itself whether to act. Commands with a `!` trigger use `message.content.invocation(of: "!name")` (`Command/Command.swift`), which matches the whole command word case-insensitively and returns the trimmed argument. Commands run sequentially per event, and an error in one is logged without stopping the others.
 
 Adding a command means:
 

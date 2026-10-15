@@ -7,8 +7,8 @@ struct SwiftEvolutionCommand: MessageCommand {
         "`!se <query>`: Suche nach Swift Evolution proposals, entweder anhand einer Nummer oder eines Suchbegriffs."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        guard message.content.hasPrefix("!se") else { return }
-        guard let query = message.content.queryString else {
+        guard let invocation = message.content.invocation(of: "!se") else { return }
+        guard let query = invocation.argument else {
             try await client.send(
                 "Ich weiß nicht wonach ich suchen soll. Bitte schreib' eine Nachricht wie `!se async`.",
                 to: message.channel_id)

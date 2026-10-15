@@ -5,7 +5,7 @@ struct XcodeLatestCommand: MessageCommand {
     let helpText = "`!xcode`: Was ist die aktuellste Version von Xcode?"
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        guard message.content == "!xcode" else { return }
+        guard message.content.invocation(of: "!xcode") != nil else { return }
 
         try await client.setTyping(in: message.channel_id)
 

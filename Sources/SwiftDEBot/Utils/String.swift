@@ -1,13 +1,6 @@
 import Foundation
 
 extension String {
-    /// The argument after the command word, or nil if there is none.
-    var queryString: String? {
-        guard let separator = firstIndex(where: \.isWhitespace) else { return nil }
-        let query = self[separator...].trimmingCharacters(in: .whitespacesAndNewlines)
-        return query.isEmpty ? nil : query
-    }
-
     /// Splits text into non-empty messages within Discord's length limit, preferring to cut at whitespace so line
     /// breaks survive and words stay whole. Words longer than the limit are cut hard.
     func maxMessageLengthChunks(maxChars: Int = 2000) -> [String] {

@@ -5,8 +5,8 @@ struct AppleStatusCommand: MessageCommand {
         "`!applestatus` oder `!applestatus <query>`: Gibt aus ob incidents bei Apple-Diensten bekannt sind. Wahlweise mit Filter für spezifische Dienste, e.g. 'iCloud Mail'."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        guard message.content.hasPrefix("!applestatus") else { return }
-        let serviceQuery = message.content.queryString ?? ""
+        guard let invocation = message.content.invocation(of: "!applestatus") else { return }
+        let serviceQuery = invocation.argument ?? ""
 
         log.debug("!applestatus '\(serviceQuery)'")
 

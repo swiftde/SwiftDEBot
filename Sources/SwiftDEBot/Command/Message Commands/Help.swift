@@ -4,7 +4,7 @@ struct HelpCommand: MessageCommand {
     let helpText = "`!hilfe` oder `!help`: Gibt diesen Text aus."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        guard message.content == "!help" || message.content == "!hilfe" else { return }
+        guard ["!help", "!hilfe"].contains(where: { message.content.invocation(of: $0) != nil }) else { return }
         let commandHelp =
             messageCommands
             .map(\.helpText)

@@ -1,11 +1,12 @@
 import DiscordBM
+import Foundation
 
 struct SPICommand: MessageCommand {
     let helpText = "`!spi <query>`: Suche nach Packages im Swift Package Index."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
-        guard message.content.hasPrefix("!spi") else { return }
-        guard let query = message.content.queryString, !query.isEmpty else {
+        guard let invocation = message.content.invocation(of: "!spi") else { return }
+        guard let query = invocation.argument else {
             try await client.send(
                 "Ich weiß nicht wonach ich suchen soll. Bitte schreib' eine Nachricht wie `!spi lighter`.",
                 to: message.channel_id)
