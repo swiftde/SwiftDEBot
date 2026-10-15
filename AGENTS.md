@@ -15,7 +15,7 @@ swift format format --in-place --recursive --parallel Package.swift Sources Test
 swift format lint --strict --recursive --parallel Package.swift Sources Tests
 ```
 
-CI runs the lint and test steps on Linux, so code must build without Apple-only frameworks. The Swift version of the nixpkgs revision pinned in `flake.lock` and the `swift` image tags in the `Dockerfile` must match. When updating the flake lock changes the nixpkgs Swift version, update the Dockerfile too.
+CI runs the lint and test steps on Linux, so code must build without Apple-only frameworks. The Swift version of the nixpkgs revision pinned in `flake.lock` and `SWIFT_VERSION` in the `Dockerfile` must match; `nix flake check` verifies this, and CI runs it.
 
 Tests use Swift Testing with [PropertyBased](https://github.com/x-sheep/swift-property-based) for property-based tests. They `@testable import` the executable target. Top-level code in `main.swift` does not run in tests, so the globals defined there (`httpClient`, `log`, `bot`) are never initialized and must not be used. Logic worth testing belongs in the helpers in `Utils/` or in a command's own pure functions.
 

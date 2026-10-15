@@ -32,6 +32,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-swiftpm-
 
+      - name: Check flake
+        run: nix flake check
+
       - name: Lint
         run: swift format lint --strict --recursive --parallel Package.swift Sources Tests
 

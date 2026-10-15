@@ -14,9 +14,6 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
     {
-      # Keep the Swift version in sync with the swift image tag in the
-      # Dockerfile, so local builds, CI and the release image share one
-      # compiler and swift-format.
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell.override { stdenv = pkgs.swiftPackages.stdenv; } {
           packages = [
@@ -31,5 +28,24 @@
           env.CPATH = "${pkgs.lib.getDev pkgs.zlib}/include";
         };
       });
+
+      # Local builds, CI and the release image must share one compiler and
+      # swift-format, so the Dockerfile's Swift version has to match nixpkgs.
+      checks = forAllSystems (
+        pkgs:
+        let
+          nixpkgsVersion = pkgs.swiftPackages.swift.version;
+          dockerfileVersion = builtins.head (
+            builtins.match ".*ARG SWIFT_VERSION=([^[:space:]]+).*" (builtins.readFile ./Dockerfile)
+          );
+        in
+        {
+          swift-version =
+            if nixpkgsVersion == dockerfileVersion then
+              pkgs.emptyFile
+            else
+              throw "Dockerfile uses Swift ${dockerfileVersion}, nixpkgs has ${nixpkgsVersion}. Update SWIFT_VERSION in the Dockerfile.";
+        }
+      );
     };
 }
