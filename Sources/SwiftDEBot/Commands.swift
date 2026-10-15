@@ -1,21 +1,21 @@
 import DiscordBM
 
 let messageCommands: [MessageCommand] = [
-    XcodeLatestCommand(),
-    SwiftEvolutionCommand(),
-    AppleStatusCommand(),
-    SPICommand(),
-    SummarizeCommand(),
+  XcodeLatestCommand(),
+  SwiftEvolutionCommand(),
+  AppleStatusCommand(),
+  SPICommand(),
+  SummarizeCommand(),
 
-    CowsCommand(),
+  CowsCommand(),
 
-    HelpCommand(),
-    UptimeCommand(),
-    PingCommand(),
+  HelpCommand(),
+  UptimeCommand(),
+  PingCommand(),
 
-    TypoCommand(),
+  TypoCommand(),
 ]
 
 let reactionCommands: [ReactionCommand] = [
-    AnimatedEmojiCommand()
+  AnimatedEmojiCommand()
 ]
