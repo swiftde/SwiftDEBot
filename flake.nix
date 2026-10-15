@@ -35,9 +35,14 @@
         pkgs:
         let
           nixpkgsVersion = pkgs.swiftPackages.swift.version;
-          dockerfileVersion = builtins.head (
-            builtins.match ".*ARG SWIFT_VERSION=([^[:space:]]+).*" (builtins.readFile ./Dockerfile)
+          dockerfileMatch = builtins.match ".*ARG SWIFT_VERSION=([^[:space:]]+).*" (
+            builtins.readFile ./Dockerfile
           );
+          dockerfileVersion =
+            if dockerfileMatch == null then
+              throw "Dockerfile has no `ARG SWIFT_VERSION=<version>` line."
+            else
+              builtins.head dockerfileMatch;
         in
         {
           swift-version =

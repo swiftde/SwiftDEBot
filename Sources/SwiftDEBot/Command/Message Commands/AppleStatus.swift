@@ -1,4 +1,5 @@
 import DiscordBM
+import Foundation
 
 struct AppleStatusCommand: MessageCommand {
     let helpText =
@@ -25,7 +26,7 @@ struct AppleStatusCommand: MessageCommand {
             .filter { !$0.events.isEmpty }
 
         if serviceQuery != "" {
-            affectedServices = affectedServices.filter { $0.serviceName.lowercased().contains(serviceQuery) }
+            affectedServices = affectedServices.filter { $0.serviceName.localizedCaseInsensitiveContains(serviceQuery) }
         }
 
         guard !affectedServices.isEmpty else {

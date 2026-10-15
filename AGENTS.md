@@ -10,7 +10,7 @@ The nix flake's dev shell (`nix develop`, or direnv via `.envrc`) provides the S
 swift build                          # debug build, enables debug-level logging
 swift run SwiftDEBot                 # needs DISCORD_TOKEN and DISCORD_APP_ID
 swift test                           # all tests
-swift test --filter QueryStringTests # one suite or test
+swift test --filter CommandInvocationTests # one suite or test
 swift format format --in-place --recursive --parallel Package.swift Sources Tests
 swift format lint --strict --recursive --parallel Package.swift Sources Tests
 ```
