@@ -12,6 +12,12 @@ struct FactCheckCommand: MessageCommand {
       return
     }
 
+    // Refuse fact-checking Schwifty's messages
+    guard target.author?.bot != true else {
+      try await client.send("Nachrichten von Bots prüfe ich nicht 🤖", to: message.channel_id)
+      return
+    }
+
     let images = ChatCompletionRequest.Message.ContentUnion.ContentElement.images(of: target)
     guard !target.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !images.isEmpty else {
       try await client.send("Da gibt es nichts zu prüfen 🫥", to: message.channel_id)
