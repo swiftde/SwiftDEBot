@@ -4,19 +4,22 @@ SwiftDEBot ("Schwifty") is the Discord bot of the German Swift community. It is 
 
 ## Commands
 
+The nix flake's dev shell (`nix develop`, or direnv via `.envrc`) provides the Swift toolchain and swift-format. Run all commands inside it.
+
 ```sh
 swift build                          # debug build, enables debug-level logging
-swift build --configuration release  # what CI and the Dockerfile run
 swift run SwiftDEBot                 # needs DISCORD_TOKEN and DISCORD_APP_ID
+swift test                           # all tests
+swift test --filter QueryStringTests # one suite or test
+swift format format --in-place --recursive --parallel Package.swift Sources Tests
+swift format lint --strict --recursive --parallel Package.swift Sources Tests
 ```
 
-CI builds inside the `swift:5.9` Docker image on Linux, so code must compile with Swift 5.9 and without Apple-only frameworks. To reproduce CI locally:
+CI runs the lint and test steps on Linux, so code must build without Apple-only frameworks. The Swift version of the nixpkgs revision pinned in `flake.lock` and the `swift` image tags in the `Dockerfile` must match. When updating the flake lock changes the nixpkgs Swift version, update the Dockerfile too.
 
-```sh
-docker run --rm -v "$(pwd):/src" -w /src swift:5.9 swift build --configuration release
-```
+Tests use Swift Testing with [PropertyBased](https://github.com/x-sheep/swift-property-based) for property-based tests. They `@testable import` the executable target. Top-level code in `main.swift` does not run in tests, so the globals defined there (`httpClient`, `log`, `bot`) are never initialized and must not be used. Logic worth testing belongs in the helpers in `Utils/` or in a command's own pure functions.
 
-There is no test target, linter or formatter. Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `docker-compose.yml` deploys.
+Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `docker-compose.yml` deploys.
 
 ## Environment
 

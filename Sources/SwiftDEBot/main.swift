@@ -8,14 +8,17 @@ let httpClient = HTTPClient(eventLoopGroupProvider: .createNew)
 
 DiscordGlobalConfiguration.logManager = DiscordLogManager(httpClient: httpClient)
 
+let discordLogAddress = try ProcessInfo.processInfo.environment["DISCORD_LOGS_WEBHOOK_URL"]
+    .map(WebhookAddress.url)
+
 // This feels unecessarily complex...
 LoggingSystem.bootstrap { label in
     var streamLogHandler = StreamLogHandler.standardOutput(label: label)
     let logHandler: LogHandler
-    if let discordLogURL = ProcessInfo.processInfo.environment["DISCORD_LOGS_WEBHOOK_URL"] {
+    if let discordLogAddress {
         logHandler = DiscordLogHandler.multiplexLogHandler(
             label: label,
-            address: try! .url(discordLogURL),
+            address: discordLogAddress,
             makeMainLogHandler: { _, _ in
                 streamLogHandler
             })

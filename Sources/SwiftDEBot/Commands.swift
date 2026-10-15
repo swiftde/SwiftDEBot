@@ -12,7 +12,7 @@ let messageCommands: [MessageCommand] = [
     HelpCommand(),
     UptimeCommand(),
     PingCommand(),
-    
+
     TypoCommand(),
 ]
 

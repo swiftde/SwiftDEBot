@@ -6,3 +6,4 @@ xcuserdata/
 .env.local
 .vscode
 .direnv
+.envrc.local

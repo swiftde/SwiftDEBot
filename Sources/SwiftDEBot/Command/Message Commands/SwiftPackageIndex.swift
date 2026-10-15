@@ -30,7 +30,9 @@ struct SPICommand: MessageCommand {
             .prefix(10)
 
         guard !searchResults.isEmpty else {
-            try await client.send("Dazu konnte ich leider nichts finden, probier's vielleicht mal hier: <https://github.com/search?q=language:swift%20\(urlQuery)&type=repositories>", to: message.channel_id)
+            try await client.send(
+                "Dazu konnte ich leider nichts finden, probier's vielleicht mal hier: <https://github.com/search?q=language:swift%20\(urlQuery)&type=repositories>",
+                to: message.channel_id)
             return
         }
 

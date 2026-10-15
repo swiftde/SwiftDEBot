@@ -14,10 +14,11 @@ struct CowsCommand: MessageCommand {
             cow = cows.vaca()
         }
 
-        try await client.send("""
-        ```
-        \(cow)
-        ```
-        """, to: message.channel_id)
+        try await client.send(
+            """
+            ```
+            \(cow)
+            ```
+            """, to: message.channel_id)
     }
 }

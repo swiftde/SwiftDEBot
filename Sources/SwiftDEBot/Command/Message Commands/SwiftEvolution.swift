@@ -1,9 +1,10 @@
+import Algorithms
 import DiscordBM
 import Foundation
-import Algorithms
 
 struct SwiftEvolutionCommand: MessageCommand {
-    let helpText = "`!se <query>`: Suche nach Swift Evolution proposals, entweder anhand einer Nummer oder eines Suchbegriffs."
+    let helpText =
+        "`!se <query>`: Suche nach Swift Evolution proposals, entweder anhand einer Nummer oder eines Suchbegriffs."
 
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         guard message.content.hasPrefix("!se") else { return }
@@ -18,8 +19,9 @@ struct SwiftEvolutionCommand: MessageCommand {
 
         let proposals: [Proposal]
         do {
-            proposals = try await httpClient.get("https://download.swift.org/swift-evolution/proposals.json",
-                                                 response: [Proposal].self)
+            proposals = try await httpClient.get(
+                "https://download.swift.org/swift-evolution/proposals.json",
+                response: [Proposal].self)
         } catch {
             try await client.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel_id)
             return
@@ -38,9 +40,10 @@ struct SwiftEvolutionCommand: MessageCommand {
             return
         }
         guard matchingQuery.count < 12 else {
-            try await client.send("""
-            Zu der Suche gibt's mehr als ein Dutzend Proposals. Versuch's lieber mit einem etwas genauerem Suchbegriff.
-            """, to: message.channel_id)
+            try await client.send(
+                """
+                Zu der Suche gibt's mehr als ein Dutzend Proposals. Versuch's lieber mit einem etwas genauerem Suchbegriff.
+                """, to: message.channel_id)
             return
         }
 
@@ -70,13 +73,13 @@ private struct Proposal: Decodable {
         let start: String?
         let end: String?
 
-        static var inputDateFormatter: DateFormatter = {
+        static let inputDateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "y-MM-dd"
             return formatter
         }()
 
-        static var outputDateFormatter: DateFormatter = {
+        static let outputDateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "de_DE")
             formatter.dateStyle = .short

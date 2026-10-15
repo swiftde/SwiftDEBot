@@ -1,4 +1,5 @@
 {
+  "originHash" : "1f7921e40bf55e11547f6f08028e89aad132463b3d7516480b39755017310f9d",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -75,10 +76,10 @@
     {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log.git",
+      "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
-        "version" : "1.5.2"
+        "revision" : "4038b6a4f74a1426f47eb1dd5b4bb5628a15d597",
+        "version" : "1.16.1"
       }
     },
     {
@@ -136,6 +137,15 @@
       }
     },
     {
+      "identity" : "swift-property-based",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/x-sheep/swift-property-based.git",
+      "state" : {
+        "revision" : "7d405e77a7b729390ed1d9a66e1f80a707fd03c4",
+        "version" : "2.0.1"
+      }
+    },
+    {
       "identity" : "swift-system",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system.git",
@@ -145,5 +155,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

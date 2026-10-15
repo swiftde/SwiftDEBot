@@ -7,15 +7,16 @@ struct TypoCommand: MessageCommand {
     let trigger: [String: [String]] = [
         "iPhone": ["Iphone", "ipPhone", "IPhone", "IFöhn"],
         "iPad": ["IPad", "Ipad"],
-        "Xcode": ["XCode", "xCode"]
+        "Xcode": ["XCode", "xCode"],
     ]
-    
+
     func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
         let content = message.content
-        
+
         for (correctWord, typos) in trigger {
             if typos.contains(where: content.contains),
-               let handle = message.author?.mentionHandle {
+                let handle = message.author?.mentionHandle
+            {
                 try await client.send("Psst \(handle), das schreibt sich \(correctWord).", to: message.channel_id)
                 break
             }

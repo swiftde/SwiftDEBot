@@ -7,7 +7,8 @@ extension DiscordClient {
     }
 
     @discardableResult
-    func addReaction(_ emoji: Reaction, to messageID: String, in channelID: String) async throws -> DiscordHTTPResponse {
+    func addReaction(_ emoji: Reaction, to messageID: String, in channelID: String) async throws -> DiscordHTTPResponse
+    {
         try await self.addOwnMessageReaction(channelId: channelID, messageId: messageID, emoji: emoji)
     }
 

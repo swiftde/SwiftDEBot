@@ -1,5 +1,5 @@
-import Foundation
 import DiscordBM
+import Foundation
 
 struct SummarizeCommand: MessageCommand {
     let helpText = "`!summarize`: Fasse einen Link, eine Nachricht oder Bilder zusammen."
@@ -92,8 +92,6 @@ struct SummarizeCommand: MessageCommand {
             throw SummaryError.missingOpenAIToken
         }
 
-        print("Message Length: \(messageContent.content.count)")
-        print("Has Attachments: \(!messageContent.attachments.isEmpty)")
         guard messageContent.content.count >= 500 || !messageContent.attachments.isEmpty else {
             throw SummaryError.contentTooShort
         }
@@ -122,8 +120,8 @@ enum SummaryError: Error {
     case emptySummary
 }
 
-private extension String {
-    var firstURL: String? {
+extension String {
+    fileprivate var firstURL: String? {
         if let found = self.firstMatch(of: #/(https?://\S+)/#) {
             return String(found.output.1)
         }
@@ -144,7 +142,6 @@ struct OpenAIResponse: Decodable {
 
     struct Choice: Decodable {
         let message: Message
-        let finish_reason: String
 
         struct Message: Decodable {
             let role, content: String
@@ -162,11 +159,11 @@ private struct OpenAIRequest: Encodable {
 
         var content = message.attachments.compactMap { attachment -> Message.ContentUnion.ContentElement? in
             guard let contentType = attachment.content_type, contentType.starts(with: "image/") else { return nil }
-            return .init(type: "image_url", text: nil, image_url: .init(url: attachment.url))
+            return .init(type: "image_url", text: nil, imageURL: .init(url: attachment.url))
         }
 
         if !message.content.isEmpty {
-            content.append(.init(type: "text", text: message.content, image_url: nil))
+            content.append(.init(type: "text", text: message.content, imageURL: nil))
         }
 
         guard !content.isEmpty else {
@@ -176,9 +173,11 @@ private struct OpenAIRequest: Encodable {
         self.messages = [
             .init(
                 role: "system",
-                content: .string("Du bist ein Assistent, der Text und Bildinhalte zusammenfasst. Bitte schreibe eine kurze Zusammenfassung für die folgende Nachricht, bestehend entweder aus Text, Bild oder beidem. Falls beides, dann bezieht sich der Text zwar vermutlich auf das Bild, die Zusammenfassung des Bildinhalts hat aber Vorrang. Die Zusammenfassung muss unabhängig von der Sprache des ursprünglichen Inhalts auf Deutsch sein.")
+                content: .string(
+                    "Du bist ein Assistent, der Text und Bildinhalte zusammenfasst. Bitte schreibe eine kurze Zusammenfassung für die folgende Nachricht, bestehend entweder aus Text, Bild oder beidem. Falls beides, dann bezieht sich der Text zwar vermutlich auf das Bild, die Zusammenfassung des Bildinhalts hat aber Vorrang. Die Zusammenfassung muss unabhängig von der Sprache des ursprünglichen Inhalts auf Deutsch sein."
+                )
             ),
-            .init(role: "user", content: .contentElementArray(content))
+            .init(role: "user", content: .contentElementArray(content)),
         ]
         self.temperature = 0.7
     }
@@ -195,7 +194,12 @@ private struct OpenAIRequest: Encodable {
                 // This could likely be more sensibly represented as a union type, but eh... 🤷
                 let type: String
                 let text: String?
-                let image_url: ImageURL?
+                let imageURL: ImageURL?
+
+                enum CodingKeys: String, CodingKey {
+                    case type, text
+                    case imageURL = "image_url"
+                }
 
                 struct ImageURL: Encodable {
                     let url: String

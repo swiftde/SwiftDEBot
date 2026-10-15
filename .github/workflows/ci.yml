@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: nix develop --command bash -e {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@v23
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v15
+
+      - name: Cache SwiftPM build
+        uses: actions/cache@v6
+        with:
+          path: .build
+          key: ${{ runner.os }}-swiftpm-${{ hashFiles('flake.lock', 'Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-swiftpm-
+
+      - name: Lint
+        run: swift format lint --strict --recursive --parallel Package.swift Sources Tests
+
+      - name: Test
+        run: swift test
