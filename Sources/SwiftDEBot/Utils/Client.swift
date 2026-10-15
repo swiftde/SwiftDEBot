@@ -32,6 +32,19 @@ extension DiscordClient {
     try await self.triggerTypingIndicator(channelId: channelID)
   }
 
+  /// Shows the typing indicator until `operation` finishes. Discord hides it after about 10 seconds, so it is renewed
+  /// for operations that take longer.
+  func whileTyping<Result>(in channelID: String, _ operation: () async throws -> Result) async rethrows -> Result {
+    let typing = Task {
+      while !Task.isCancelled {
+        _ = try? await setTyping(in: channelID)
+        try? await Task.sleep(for: .seconds(8))
+      }
+    }
+    defer { typing.cancel() }
+    return try await operation()
+  }
+
   func channelIdentifier(for channelID: String) async -> String? {
     guard let channel = try? await self.getChannel(id: channelID).decode() else { return nil }
     if channel.type == .dm {

@@ -18,8 +18,6 @@ struct FactCheckCommand: MessageCommand {
       return
     }
 
-    try await client.setTyping(in: message.channel_id)
-
     // The history is only context, so a channel without read access still gets a fact check.
     let context =
       (try? await client.listMessages(channelId: target.channel_id, before: target.id, limit: 10).decode()) ?? []
@@ -34,7 +32,10 @@ struct FactCheckCommand: MessageCommand {
       messages: messages, temperature: 0.2, tools: [.webSearch(maxResults: 5, maxUses: 3)])
 
     do {
-      guard let result = try await httpClient.openRouterCompletion(request) else {
+      let result = try await client.whileTyping(in: message.channel_id) {
+        try await httpClient.openRouterCompletion(request)
+      }
+      guard let result else {
         try await client.send("Das kann ich leider nicht prüfen 🫥", to: message.channel_id)
         return
       }

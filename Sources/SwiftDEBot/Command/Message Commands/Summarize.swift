@@ -7,10 +7,10 @@ struct SummarizeCommand: MessageCommand {
   func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
     guard message.content.invocation(of: "!summarize") != nil else { return }
 
-    try await client.setTyping(in: message.channel_id)
-
     do {
-      let summary = try await generateSummary(for: message)
+      let summary = try await client.whileTyping(in: message.channel_id) {
+        try await generateSummary(for: message)
+      }
       for chunk in summary.maxMessageLengthChunks() {
         try await client.sendModelOutput(chunk, to: message.channel_id)
       }
