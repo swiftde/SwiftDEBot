@@ -5,3 +5,4 @@
 xcuserdata/
 .env.local
 .vscode
+.direnv
