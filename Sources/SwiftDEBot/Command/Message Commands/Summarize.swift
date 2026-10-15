@@ -27,7 +27,7 @@ struct SummarizeCommand: MessageCommand {
             "Schicke bitte `!summarize` als Reply auf eine Nachricht.",
             to: message.channel_id
           )
-        case .brokenURL, .missingKagiToken, .missingOpenAIToken:
+        case .brokenURL, .missingKagiToken, .missingOpenRouterKey:
           try await client.send(
             "💀 \(error)",
             to: message.channel_id
@@ -87,9 +87,9 @@ struct SummarizeCommand: MessageCommand {
   func summarize(messageContent: Gateway.MessageCreate) async throws -> String {
     log.info("Summarizing message from \(messageContent.author?.mentionHandle ?? "unknown user")")
 
-    guard let apiToken = ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] else {
-      log.error("Necessary env var not found, please set OPENAI_API_TOKEN.")
-      throw SummaryError.missingOpenAIToken
+    guard let apiToken = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"] else {
+      log.error("Necessary env var not found, please set OPENROUTER_API_KEY.")
+      throw SummaryError.missingOpenRouterKey
     }
 
     guard messageContent.content.count >= 500 || !messageContent.attachments.isEmpty else {
@@ -97,10 +97,10 @@ struct SummarizeCommand: MessageCommand {
     }
 
     let response = try await httpClient.post(
-      "https://api.openai.com/v1/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions",
       headers: ["Authorization": "Bearer \(apiToken)"],
-      body: try OpenAIRequest(message: messageContent),
-      response: OpenAIResponse.self
+      body: try ChatCompletionRequest(message: messageContent),
+      response: ChatCompletionResponse.self
     )
 
     guard let summary = response.choices.first else {
@@ -116,7 +116,7 @@ enum SummaryError: Error {
   case noReply
   case brokenURL
   case missingKagiToken
-  case missingOpenAIToken
+  case missingOpenRouterKey
   case emptySummary
 }
 
@@ -137,7 +137,7 @@ private struct KagiResponse: Decodable {
   }
 }
 
-struct OpenAIResponse: Decodable {
+private struct ChatCompletionResponse: Decodable {
   let choices: [Choice]
 
   struct Choice: Decodable {
@@ -149,13 +149,13 @@ struct OpenAIResponse: Decodable {
   }
 }
 
-private struct OpenAIRequest: Encodable {
+private struct ChatCompletionRequest: Encodable {
   let model: String
   let messages: [Message]
   let temperature: Double
 
   init(message: Gateway.MessageCreate) throws {
-    self.model = "gpt-4o-mini"
+    self.model = "z-ai/glm-5.3-flash"
 
     var content = message.attachments.compactMap { attachment -> Message.ContentUnion.ContentElement? in
       guard let contentType = attachment.content_type, contentType.starts(with: "image/") else { return nil }

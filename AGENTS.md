@@ -23,7 +23,7 @@ Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `d
 
 ## Environment
 
-`DISCORD_TOKEN` and `DISCORD_APP_ID` are required; the bot exits without them. `DISCORD_LOGS_WEBHOOK_URL` additionally forwards logs to a Discord webhook. `!summarize` needs `KAGI_API_TOKEN` for links and `OPENAI_API_TOKEN` for messages and images; it reports a missing token in the channel instead of failing at startup.
+`DISCORD_TOKEN` and `DISCORD_APP_ID` are required; the bot exits without them. `DISCORD_LOGS_WEBHOOK_URL` additionally forwards logs to a Discord webhook. `!summarize` needs `KAGI_API_TOKEN` for links and `OPENROUTER_API_KEY` for messages and images; it reports a missing token in the channel instead of failing at startup.
 
 ## Architecture
 
