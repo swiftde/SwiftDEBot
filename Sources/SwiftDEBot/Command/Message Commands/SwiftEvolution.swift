@@ -20,8 +20,9 @@ struct SwiftEvolutionCommand: MessageCommand {
     let proposals: [Proposal]
     do {
       proposals = try await httpClient.get(
-        "https://download.swift.org/swift-evolution/proposals.json",
-        response: [Proposal].self)
+        "https://download.swift.org/swift-evolution/v1/evolution.json",
+        response: EvolutionMetadata.self
+      ).proposals
     } catch {
       try await client.send("Ich hatte einen Fehler beim Nachschauen 😵 \(error)", to: message.channel_id)
       return
@@ -55,7 +56,11 @@ struct SwiftEvolutionCommand: MessageCommand {
   }
 }
 
-private struct Proposal: Decodable {
+struct EvolutionMetadata: Decodable {
+  let proposals: [Proposal]
+}
+
+struct Proposal: Decodable {
   let id: String
   let title: String
   let link: String
@@ -73,12 +78,6 @@ private struct Proposal: Decodable {
     let start: String?
     let end: String?
 
-    static let inputDateFormatter: DateFormatter = {
-      let formatter = DateFormatter()
-      formatter.dateFormat = "y-MM-dd"
-      return formatter
-    }()
-
     static let outputDateFormatter: DateFormatter = {
       let formatter = DateFormatter()
       formatter.locale = Locale(identifier: "de_DE")
@@ -90,11 +89,11 @@ private struct Proposal: Decodable {
 
     var description: String {
       switch (version, start, end) {
-      case (let .some(version), nil, nil):
+      case (let .some(version), nil, nil) where !version.isEmpty:
         return "\(state) Swift \(version)"
       case (nil, let .some(start), let .some(end)):
-        guard let startDate = Status.inputDateFormatter.date(from: start),
-          let endDate = Status.inputDateFormatter.date(from: end)
+        guard let startDate = try? Date(start, strategy: .iso8601),
+          let endDate = try? Date(end, strategy: .iso8601)
         else { return state }
         let startStr = Status.outputDateFormatter.string(from: startDate)
         let endStr = Status.outputDateFormatter.string(from: endDate)
@@ -115,7 +114,7 @@ private struct Proposal: Decodable {
       **\(id)** \(title.trimmingCharacters(in: .whitespacesAndNewlines))
       Autor(en): \(authors.map { $0.name }.joined(separator: ", "))
       Status: \(status.description)
-      <https://github.com/apple/swift-evolution/blob/main/proposals/\(link)>
+      <https://github.com/swiftlang/swift-evolution/blob/main/proposals/\(link)>
       """
   }
 }
