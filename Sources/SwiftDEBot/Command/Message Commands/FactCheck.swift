@@ -3,33 +3,47 @@ import Foundation
 
 struct FactCheckCommand: MessageCommand {
   let helpText =
-    "`!factcheck` oder `!factcheck <Hinweis>` als Reply: Prüfe die Fakten einer Nachricht. Der Hinweis lenkt die Prüfung, etwa auf eine Behauptung."
+    "`!factcheck` als Reply prüft die Fakten einer Nachricht, `!factcheck <Hinweis>` lenkt die Prüfung dabei etwa auf eine Behauptung. Ohne Reply prüft `!factcheck <Behauptung>` die Behauptung selbst."
 
   func run(client: DiscordClient, message: Gateway.MessageCreate) async throws {
     guard let invocation = message.content.invocation(of: "!factcheck") else { return }
 
-    guard let target = message.referenced_message?.value else {
-      try await client.send("Schicke bitte `!factcheck` als Reply auf eine Nachricht.", to: message.channel_id)
-      return
+    let isReply = message.message_reference != nil
+    let requester = message.author?.username ?? "Unbekannt"
+    // Without a reply, the command message itself carries the claim and anchors the history.
+    let subject: Gateway.MessageCreate
+    if isReply {
+      // Discord omits the replied-to message if it was deleted or could not be loaded.
+      guard let referenced = message.referenced_message?.value else {
+        try await client.send("Die Nachricht kann ich nicht mehr finden 🫥", to: message.channel_id)
+        return
+      }
+      // Refuse fact-checking Schwifty's messages
+      guard referenced.author?.bot != true else {
+        try await client.send("Nachrichten von Bots prüfe ich nicht 🤖", to: message.channel_id)
+        return
+      }
+      subject = referenced
+    } else {
+      subject = message
     }
 
-    // Refuse fact-checking Schwifty's messages
-    guard target.author?.bot != true else {
-      try await client.send("Nachrichten von Bots prüfe ich nicht 🤖", to: message.channel_id)
-      return
-    }
-
-    let images = ChatCompletionRequest.Message.ContentUnion.ContentElement.images(of: target)
+    let target = isReply ? ChatLine(subject) : ChatLine(author: requester, content: invocation.argument ?? "")
+    let images = ChatCompletionRequest.Message.ContentUnion.ContentElement.images(of: subject)
     guard !target.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !images.isEmpty else {
-      try await client.send("Da gibt es nichts zu prüfen 🫥", to: message.channel_id)
+      let reply =
+        isReply
+        ? "Da gibt es nichts zu prüfen 🫥"
+        : "Schicke `!factcheck` als Reply auf eine Nachricht oder schreibe die Behauptung dahinter."
+      try await client.send(reply, to: message.channel_id)
       return
     }
 
     // The history is only context, so a channel without read access still gets a fact check.
     let context =
-      (try? await client.listMessages(channelId: target.channel_id, before: target.id, limit: 10).decode()) ?? []
-    let hint = invocation.argument.map { ChatLine(author: message.author?.username ?? "Unbekannt", content: $0) }
-    let transcript = Self.transcript(target: ChatLine(target), context: context.map(ChatLine.init), hint: hint)
+      (try? await client.listMessages(channelId: subject.channel_id, before: subject.id, limit: 10).decode()) ?? []
+    let hint = isReply ? invocation.argument.map { ChatLine(author: requester, content: $0) } : nil
+    let transcript = Self.transcript(target: target, context: context.map(ChatLine.init), hint: hint)
 
     var messages: [ChatCompletionRequest.Message] = [.init(role: "system", content: .string(Self.systemPrompt))]
     if let history = transcript.history {
@@ -60,8 +74,9 @@ struct FactCheckCommand: MessageCommand {
 
   private static let systemPrompt = """
     Du bist ein sorgfältiger Faktenprüfer im Discord-Server der deutschsprachigen Swift-Community. Du erhältst einen \
-    Chatverlauf. Prüfe die Nachricht unter „Zu prüfende Nachricht“. Der Verlauf davor dient nur als Kontext. Bilder \
-    gehören zur zu prüfenden Nachricht.
+    Chatverlauf. Prüfe die Nachricht unter „Zu prüfende Nachricht“. Sie kann auch von der Person stammen, die die \
+    Prüfung angefordert hat. Der Verlauf davor dient nur als Kontext, etwa um zu verstehen, worauf sich die Nachricht \
+    bezieht. Bilder gehören zur zu prüfenden Nachricht.
 
     Wer die Prüfung angefordert hat, kann als letzte, eigene Nachricht unter „Hinweis von“ einen Hinweis geben, etwa \
     welche Behauptung du prüfen sollst. Folge ihm. Nennt er eine Nachricht aus dem Verlauf, beziehe sie so ein, wie \
