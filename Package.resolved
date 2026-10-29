@@ -1,5 +1,5 @@
 {
-  "originHash" : "1f7921e40bf55e11547f6f08028e89aad132463b3d7516480b39755017310f9d",
+  "originHash" : "f916a18f9f1ec7f08766ea637af7be28f5cb9525e9d74585a9d74ef1f26acf9d",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "3a31859efeb054cdcd407fe152802ddc5c58bbce",
         "version" : "4.5.3"
-      }
-    },
-    {
-      "identity" : "shell",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/helje5/Shell.git",
-      "state" : {
-        "revision" : "9982634c51b506d42fcb11b1c85e7ccc145679bd",
-        "version" : "0.1.4"
       }
     },
     {

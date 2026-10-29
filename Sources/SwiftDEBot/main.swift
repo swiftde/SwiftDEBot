@@ -4,6 +4,8 @@ import DiscordLogger
 import Foundation
 import Logging
 
+let startDate = Date()
+
 let httpClient = HTTPClient(eventLoopGroupProvider: .createNew)
 
 DiscordGlobalConfiguration.logManager = DiscordLogManager(httpClient: httpClient)
