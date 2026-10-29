@@ -4,7 +4,7 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
   outputs =
-    { nixpkgs, ... }:
+    { self, nixpkgs, ... }:
     let
       systems = [
         "aarch64-darwin"
@@ -14,6 +14,12 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
     {
+      packages = forAllSystems (pkgs: {
+        default = pkgs.callPackage ./nix/package.nix { };
+      });
+
+      nixosModules.default = import ./nix/module.nix self;
+
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell.override { stdenv = pkgs.swiftPackages.stdenv; } {
           packages = [
@@ -50,6 +56,9 @@
               pkgs.emptyFile
             else
               throw "Dockerfile uses Swift ${dockerfileVersion}, nixpkgs has ${nixpkgsVersion}. Update SWIFT_VERSION in the Dockerfile.";
+        }
+        // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+          nixos-module = pkgs.testers.runNixOSTest (import ./nixos-test.nix { inherit self; });
         }
       );
     };

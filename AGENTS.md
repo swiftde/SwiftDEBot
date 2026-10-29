@@ -19,7 +19,7 @@ CI runs the lint and test steps on Linux, so code must build without Apple-only 
 
 Tests use Swift Testing with [PropertyBased](https://github.com/x-sheep/swift-property-based) for property-based tests. They `@testable import` the executable target. Top-level code in `main.swift` does not run in tests, so the globals defined there (`httpClient`, `log`, `bot`) are never initialized and must not be used. Logic worth testing belongs in the helpers in `Utils/` or in a command's own pure functions.
 
-Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `docker-compose.yml` deploys.
+Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `docker-compose.yml` deploys. The flake also exports the bot as `packages.default` and a NixOS module (`nix/module.nix`) that runs it as a systemd service. Its dependencies are pinned by a hash in `nix/package.nix`, so a `Package.resolved` change needs a new hash there; `nix flake check` fails until it has one and prints the right value. Foundation on Linux reads time zones only from `/usr/share/zoneinfo`: the Docker image has it, the module bind-mounts it on NixOS, and the Nix build's sandbox lacks it, so that build skips the suite that formats dates.
 
 ## Environment
 
