@@ -37,7 +37,9 @@ guard
   let token = ProcessInfo.processInfo.environment["DISCORD_TOKEN"],
   let appID = ProcessInfo.processInfo.environment["DISCORD_APP_ID"]
 else {
-  fatalError("Necessary env vars not found, please set DISCORD_TOKEN and/or DISCORD_APP_ID.")
+  // exit rather than fatalError: a missing setting is no crash worth a core dump.
+  log.critical("Necessary env vars not found, please set DISCORD_TOKEN and/or DISCORD_APP_ID.")
+  exit(1)
 }
 
 let bot = BotGatewayManager(
