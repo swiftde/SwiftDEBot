@@ -4,16 +4,27 @@ import Logging
 /// A reminder set with `!remindme`, due to be delivered as a reply to the message that set it.
 struct Reminder: Codable, Equatable, Sendable {
   var id = UUID()
+  /// Identifies the reminder for `!remindme löschen`. Assigned by `ReminderStore.add` and stable until delivery, so a
+  /// reminder firing in between cannot redirect a deletion to another one.
+  var number = 0
   let userID: String
   let channelID: String
   let messageID: String
   let guildID: String?
+  /// The message that `!remindme` replied to, if any.
+  var referencedMessageID: String? = nil
   let dueDate: Date
   let text: String?
+
+  /// Jump link to the referenced message.
+  var referencedMessageURL: String? {
+    referencedMessageID.map { "https://discord.com/channels/\(guildID ?? "@me")/\(channelID)/\($0)" }
+  }
 }
 
 enum ReminderStoreError: Error, Equatable {
   case tooManyReminders
+  case saveFailed
 }
 
 /// Keeps the pending reminders in a JSON file so they survive restarts, and delivers each one when it is due.
@@ -27,13 +38,16 @@ actor ReminderStore {
   private var reminders: [Reminder] = []
   private var timers: [UUID: Task<Void, Never>] = [:]
   private var deliver: Deliver?
+  /// False if the file holds data the store could not read or move aside, which saving would destroy.
+  private var canSave = true
 
   init(fileURL: URL) {
     self.fileURL = fileURL
   }
 
   /// Loads the saved reminders and schedules them. Reminders that came due while the bot was down are delivered right
-  /// away. A file that cannot be decoded is moved aside to `<name>.corrupt` and the store starts empty.
+  /// away. A file that cannot be decoded is moved aside to `<name>.corrupt` and the store starts empty. A file that cannot
+  /// be read is left alone, and `add` fails until the next start.
   func start(deliver: @escaping Deliver) {
     self.deliver = deliver
     reminders = load()
@@ -46,28 +60,35 @@ actor ReminderStore {
     reminders.filter { $0.userID == userID }.sorted { $0.dueDate < $1.dueDate }
   }
 
-  func add(_ reminder: Reminder) throws {
-    guard reminders(of: reminder.userID).count < Self.maxRemindersPerUser else {
+  /// Stores the reminder under the user's smallest free number and returns it with that number.
+  @discardableResult
+  func add(_ reminder: Reminder) throws -> Reminder {
+    let taken = Set(reminders(of: reminder.userID).map(\.number))
+    guard let number = (1...Self.maxRemindersPerUser).first(where: { !taken.contains($0) }) else {
       throw ReminderStoreError.tooManyReminders
     }
-    reminders.append(reminder)
-    save()
-    schedule(reminder)
+    var stored = reminder
+    stored.number = number
+    reminders.append(stored)
+    guard save() else {
+      reminders.removeLast()
+      throw ReminderStoreError.saveFailed
+    }
+    schedule(stored)
+    return stored
   }
 
-  /// Removes the user's reminder at a 1-based `position` in `reminders(of:)`. Returns nil if there is none.
-  func remove(position: Int, of userID: String) -> Reminder? {
-    let own = reminders(of: userID)
-    guard own.indices.contains(position - 1) else { return nil }
-    let reminder = own[position - 1]
-    remove(id: reminder.id)
+  /// Removes the user's reminder with this number. Returns nil if there is none. If the file cannot be updated the
+  /// reminder stays pending, because it would come back on the next start anyway.
+  func remove(number: Int, of userID: String) throws -> Reminder? {
+    guard let index = reminders.firstIndex(where: { $0.userID == userID && $0.number == number }) else { return nil }
+    let reminder = reminders.remove(at: index)
+    guard save() else {
+      reminders.insert(reminder, at: index)
+      throw ReminderStoreError.saveFailed
+    }
+    timers.removeValue(forKey: reminder.id)?.cancel()
     return reminder
-  }
-
-  private func remove(id: UUID) {
-    timers.removeValue(forKey: id)?.cancel()
-    reminders.removeAll { $0.id == id }
-    save()
   }
 
   private func schedule(_ reminder: Reminder) {
@@ -90,25 +111,43 @@ actor ReminderStore {
   }
 
   private func load() -> [Reminder] {
-    guard FileManager.default.fileExists(atPath: fileURL.path) else { return [] }
+    let data: Data
     do {
-      let data = try Data(contentsOf: fileURL)
+      data = try Data(contentsOf: fileURL)
+    } catch CocoaError.fileReadNoSuchFile {
+      return []
+    } catch {
+      logger.error("Could not read reminders from \(fileURL.path), not saving any until restart: \(error)")
+      canSave = false
+      return []
+    }
+    do {
       return try Self.makeDecoder().decode([Reminder].self, from: data)
     } catch {
       let corruptURL = fileURL.appendingPathExtension("corrupt")
-      logger.error("Could not read reminders from \(fileURL.path), moving it to \(corruptURL.path): \(error)")
+      logger.error("Could not decode reminders in \(fileURL.path), moving it to \(corruptURL.path): \(error)")
       try? FileManager.default.removeItem(at: corruptURL)
-      try? FileManager.default.moveItem(at: fileURL, to: corruptURL)
+      do {
+        try FileManager.default.moveItem(at: fileURL, to: corruptURL)
+      } catch {
+        logger.error("Could not move \(fileURL.path), not saving any reminders until restart: \(error)")
+        canSave = false
+      }
       return []
     }
   }
 
-  private func save() {
+  /// Returns whether the reminders reached the file. Failures are logged here.
+  @discardableResult
+  private func save() -> Bool {
+    guard canSave else { return false }
     do {
       // .atomic writes a temporary file and renames it, so a crash cannot leave a half-written file.
       try Self.makeEncoder().encode(reminders).write(to: fileURL, options: .atomic)
+      return true
     } catch {
       logger.error("Could not save reminders to \(fileURL.path): \(error)")
+      return false
     }
   }
 
