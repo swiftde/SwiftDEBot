@@ -64,6 +64,9 @@ let bot = BotGatewayManager(
   ]
 )
 
+let reminderStore = ReminderStore(
+  fileURL: URL(fileURLWithPath: ProcessInfo.processInfo.environment["REMINDERS_PATH"] ?? "reminders.json"))
+
 log.info("Starting")
 
 Task {
@@ -93,6 +96,15 @@ Task {
       }
     default:
       break
+    }
+  }
+
+  // Delivery goes through the REST API, so reminders due right at startup need not wait for the gateway.
+  await reminderStore.start { reminder in
+    do {
+      try await bot.client.deliverReminder(reminder)
+    } catch {
+      log.error("Could not deliver reminder \(reminder.id): \(error)")
     }
   }
 

@@ -23,7 +23,7 @@ Pushes to `main` build and publish `ghcr.io/swiftde/swiftdebot:latest`, which `d
 
 ## Environment
 
-`DISCORD_TOKEN` and `DISCORD_APP_ID` are required; the bot exits without them. `DISCORD_LOGS_WEBHOOK_URL` additionally forwards logs to a Discord webhook. `!summarize` needs `KAGI_API_TOKEN` for links and `OPENROUTER_API_KEY` for messages and images. `!factcheck` needs `OPENROUTER_API_KEY` and lets the model search the web through OpenRouter's web search tool, which costs extra per search. Both report a missing token in the channel instead of failing at startup.
+`DISCORD_TOKEN` and `DISCORD_APP_ID` are required; the bot exits without them. `DISCORD_LOGS_WEBHOOK_URL` additionally forwards logs to a Discord webhook. `!summarize` needs `KAGI_API_TOKEN` for links and `OPENROUTER_API_KEY` for messages and images. `!factcheck` needs `OPENROUTER_API_KEY` and lets the model search the web through OpenRouter's web search tool, which costs extra per search. Both report a missing token in the channel instead of failing at startup. `!remindme` keeps pending reminders in the JSON file at `REMINDERS_PATH` (default `reminders.json` in the working directory) so they survive restarts. `docker-compose.yml` puts it on a volume and the NixOS module in its state directory.
 
 ## Architecture
 

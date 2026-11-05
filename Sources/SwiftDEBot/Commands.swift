@@ -7,6 +7,7 @@ let messageCommands: [MessageCommand] = [
   SPICommand(),
   SummarizeCommand(),
   FactCheckCommand(),
+  RemindMeCommand(store: reminderStore),
 
   CowsCommand(),
 

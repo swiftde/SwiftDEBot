@@ -7,3 +7,6 @@ services:
     environment:
       - DISCORD_TOKEN=
       - DISCORD_APP_ID=
+      - REMINDERS_PATH=/data/reminders.json
+    volumes:
+      - ./data:/data

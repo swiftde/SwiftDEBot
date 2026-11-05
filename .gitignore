@@ -7,3 +7,6 @@ xcuserdata/
 .vscode
 .direnv
 .envrc.local
+/reminders.json
+/reminders.json.corrupt
+/data
