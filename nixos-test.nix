@@ -64,6 +64,21 @@
         machine.wait_until_succeeds(running_pid + f' && [ "$pid" != {old_pid} ]')
         machine.wait_for_unit("swiftdebot.service")
 
+    with subtest("bot can update its reminders file"):
+        state = "/var/lib/private/swiftdebot"
+        # Overdue, so the bot removes and saves it at startup. Delivery fails offline, which is fine here.
+        machine.succeed(
+            f"""echo '[{{"id":"00000000-0000-0000-0000-000000000000","number":1,"userID":"1","channelID":"1","messageID":"1","dueDate":"2000-01-01T00:00:00Z"}}]' > {state}/reminders.json"""
+        )
+        machine.succeed("systemctl restart swiftdebot")
+        machine.wait_until_succeeds(f"! grep -q userID {state}/reminders.json && test -s {state}/reminders.json")
+
+    with subtest("bot moves an undecodable reminders file aside"):
+        machine.succeed(f"echo kaputt > {state}/reminders.json")
+        machine.succeed("systemctl restart swiftdebot")
+        machine.wait_until_succeeds(f"grep -qx kaputt {state}/reminders.json.corrupt")
+        machine.succeed(f"[ ! -e {state}/reminders.json ]")
+
     with subtest("missing token makes the bot exit instead of hanging"):
         machine.succeed(
             "rm /etc/swiftdebot.env",
