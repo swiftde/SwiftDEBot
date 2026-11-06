@@ -317,6 +317,15 @@ private let snowflakes = Gen.int(in: 1...Int.max).map { String($0) }
     try encoder.encode(reminders).write(to: url)
   }
 
+  /// Fails a test waiting for a delivery that never comes. `.timeLimit` cannot do this: it cancels a sleep when the test
+  /// ends, and Swift Testing segfaults capturing a backtrace of that throw on x86_64 Linux.
+  func endAfterAMinute(_ continuation: AsyncStream<Reminder>.Continuation) {
+    Task {
+      try? await Task.sleep(for: .seconds(60))
+      continuation.finish()
+    }
+  }
+
   func startedStore(at url: URL) async -> ReminderStore {
     let store = ReminderStore(fileURL: url)
     await store.start { _ in }
@@ -435,7 +444,7 @@ private let snowflakes = Gen.int(in: 1...Int.max).map { String($0) }
     #expect(try await second.add(reminder(dueIn: 3_600)).number == 2)
   }
 
-  @Test(.timeLimit(.minutes(1))) func numbersStayWhenAnotherReminderIsDelivered() async throws {
+  @Test func numbersStayWhenAnotherReminderIsDelivered() async throws {
     defer { try? FileManager.default.removeItem(at: fileURL) }
     let overdue = reminder(dueIn: -600, number: 2)
     let sooner = reminder(dueIn: 3_600, number: 3)
@@ -443,6 +452,7 @@ private let snowflakes = Gen.int(in: 1...Int.max).map { String($0) }
     try write([later, overdue, sooner], to: fileURL)
 
     let (deliveries, continuation) = AsyncStream<Reminder>.makeStream()
+    endAfterAMinute(continuation)
     let store = ReminderStore(fileURL: fileURL)
     await store.start { continuation.yield($0) }
     var iterator = deliveries.makeAsyncIterator()
@@ -524,10 +534,11 @@ private let snowflakes = Gen.int(in: 1...Int.max).map { String($0) }
     }
   }
 
-  @Test(.timeLimit(.minutes(1))) func failedReminderIsNeverDelivered() async throws {
+  @Test func failedReminderIsNeverDelivered() async throws {
     let (directory, file) = urlInMissingDirectory()
     defer { try? FileManager.default.removeItem(at: directory) }
     let (deliveries, continuation) = AsyncStream<Reminder>.makeStream()
+    endAfterAMinute(continuation)
     let store = ReminderStore(fileURL: file)
     await store.start { continuation.yield($0) }
 
@@ -561,6 +572,23 @@ private let snowflakes = Gen.int(in: 1...Int.max).map { String($0) }
     let next = try await store.add(reminder(dueIn: 7_200))
     #expect(next.number == 2)
     #expect(await startedStore(at: file).reminders(of: "42") == [kept, next])
+  }
+
+  @Test func deletedReminderIsNeverDelivered() async throws {
+    defer { try? FileManager.default.removeItem(at: fileURL) }
+    let (deliveries, continuation) = AsyncStream<Reminder>.makeStream()
+    endAfterAMinute(continuation)
+    let store = ReminderStore(fileURL: fileURL)
+    await store.start { continuation.yield($0) }
+
+    let deleted = try await store.add(reminder(dueIn: 1, text: "gelöscht"))
+    let kept = try await store.add(reminder(dueIn: 2, text: "bleibt"))
+    #expect(try await store.remove(number: deleted.number, of: "42") == deleted)
+
+    // The deleted reminder is due first, so it would arrive first if it still fired.
+    var iterator = deliveries.makeAsyncIterator()
+    let delivered = await iterator.next()
+    #expect(delivered == kept)
   }
 
   @Test func failedDeleteKeepsTheReminder() async throws {

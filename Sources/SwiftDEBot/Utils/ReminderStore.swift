@@ -36,7 +36,6 @@ actor ReminderStore {
   private let fileURL: URL
   private let logger = Logger(label: "swiftde.bot.reminders")
   private var reminders: [Reminder] = []
-  private var timers: [UUID: Task<Void, Never>] = [:]
   private var deliver: Deliver?
   /// False if the file holds data the store could not read or move aside, which saving would destroy.
   private var canSave = true
@@ -87,16 +86,15 @@ actor ReminderStore {
       reminders.insert(reminder, at: index)
       throw ReminderStoreError.saveFailed
     }
-    timers.removeValue(forKey: reminder.id)?.cancel()
     return reminder
   }
 
+  /// The task of a deleted reminder sleeps on and `fire` ignores it. Cancelling would make `Task.sleep` throw, and
+  /// Swift Testing segfaults capturing a backtrace of that throw on x86_64 Linux.
   private func schedule(_ reminder: Reminder) {
-    timers[reminder.id] = Task { [weak self] in
+    Task { [weak self] in
       let delay = reminder.dueDate.timeIntervalSinceNow
-      if delay > 0 {
-        do { try await Task.sleep(for: .seconds(delay)) } catch { return }
-      }
+      if delay > 0 { try? await Task.sleep(for: .seconds(delay)) }
       await self?.fire(reminder)
     }
   }
@@ -104,7 +102,6 @@ actor ReminderStore {
   private func fire(_ reminder: Reminder) async {
     guard reminders.contains(where: { $0.id == reminder.id }) else { return }
     // Removed before delivery so that a crash during delivery cannot repeat the reminder after a restart.
-    timers[reminder.id] = nil
     reminders.removeAll { $0.id == reminder.id }
     save()
     await deliver?(reminder)
