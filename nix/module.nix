@@ -36,11 +36,14 @@ in
       wantedBy = [ "multi-user.target" ];
       wants = [ "network-online.target" ];
       after = [ "network-online.target" ];
+      environment.REMINDERS_PATH = "/var/lib/swiftdebot/reminders.json";
 
       serviceConfig = {
         ExecStart = lib.getExe cfg.package;
         EnvironmentFile = cfg.environmentFile;
         DynamicUser = true;
+        # Keeps pending `!remindme` reminders across restarts.
+        StateDirectory = "swiftdebot";
         # Foundation on Linux only looks for time zones in /usr/share/zoneinfo,
         # which NixOS lacks; without it `!se` traps formatting review dates.
         BindReadOnlyPaths = [ "${pkgs.tzdata}/share/zoneinfo:/usr/share/zoneinfo" ];
