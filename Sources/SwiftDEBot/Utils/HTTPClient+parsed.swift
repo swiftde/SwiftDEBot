@@ -18,7 +18,7 @@ extension HTTPClient {
       let body = try await response.body.collect(upTo: 50 * 1024 * 1024)  // 50 MB
       return try JSONDecoder().decode(Response.self, from: body)
     } else {
-      throw HTTPStatusError(status: response.status)
+      throw await HTTPStatusError(loggingBodyOf: response, from: url)
     }
   }
 
@@ -45,7 +45,7 @@ extension HTTPClient {
       let body = try await response.body.collect(upTo: 50 * 1024 * 1024)  // 50 MB
       return try JSONDecoder().decode(Response.self, from: body)
     } else {
-      throw HTTPStatusError(status: response.status)
+      throw await HTTPStatusError(loggingBodyOf: response, from: url)
     }
   }
 }
@@ -54,4 +54,19 @@ struct HTTPStatusError: Error, CustomStringConvertible {
   let status: HTTPResponseStatus
 
   var description: String { status.description }
+
+  /// Logs the start of the body, where APIs explain their errors. It stays out of `description` because some
+  /// commands post that to the channel.
+  init(loggingBodyOf response: HTTPClientResponse, from url: String) async {
+    status = response.status
+    var body = ByteBuffer()
+    do {
+      for try await var chunk in response.body {
+        body.writeBuffer(&chunk)
+        if body.readableBytes >= 500 { break }
+      }
+    } catch {}
+    let host = URL(string: url)?.host ?? "unknown host"
+    log.warning("\(host) returned \(status): \(String(buffer: body).prefix(500))")
+  }
 }
