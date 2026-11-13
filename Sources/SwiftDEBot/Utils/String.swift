@@ -30,3 +30,9 @@ extension String {
     return chunks
   }
 }
+
+extension CharacterSet {
+  /// For a whole URL passed as one query value. `urlQueryAllowed` keeps `&`, `=` and `+`, which would split the
+  /// value into further parameters or turn into a space on the server.
+  static let queryValueAllowed = CharacterSet.urlQueryAllowed.subtracting(CharacterSet(charactersIn: "&=+"))
+}

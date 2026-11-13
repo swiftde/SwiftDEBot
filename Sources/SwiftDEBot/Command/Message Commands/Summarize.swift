@@ -63,7 +63,7 @@ struct SummarizeCommand: MessageCommand {
 
   func summarize(url: String) async throws -> String {
     log.info("Summarizing \(url)")
-    guard let encodedURL = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+    guard let encodedURL = url.addingPercentEncoding(withAllowedCharacters: .queryValueAllowed) else {
       log.error("Unable to URL encode \(url)")
       throw SummaryError.brokenURL
     }
