@@ -130,15 +130,6 @@ enum SummaryError: Error {
   case emptySummary
 }
 
-extension String {
-  fileprivate var firstURL: String? {
-    if let found = self.firstMatch(of: #/(https?://\S+)/#) {
-      return String(found.output.1)
-    }
-    return nil
-  }
-}
-
 private struct KagiResponse: Decodable {
   let data: ResponseData
 
