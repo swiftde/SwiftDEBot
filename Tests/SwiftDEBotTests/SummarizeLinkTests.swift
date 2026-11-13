@@ -1,3 +1,4 @@
+import Foundation
 import PropertyBased
 import Testing
 
@@ -44,4 +45,13 @@ struct SummarizeLinkTests {
     }
   }
 
+  @Test func encodedLinkSurvivesAsOneQueryValue() async {
+    await propertyCheck(input: urls) { url in
+      let encoded = try #require(url.addingPercentEncoding(withAllowedCharacters: .queryValueAllowed))
+      let components = URLComponents(string: "https://kagi.com/api?target_language=DE&url=\(encoded)")
+      #expect(components?.queryItems?.last == URLQueryItem(name: "url", value: url))
+      // Servers commonly decode a literal + in a query as a space.
+      #expect(!encoded.contains("+"))
+    }
+  }
 }
