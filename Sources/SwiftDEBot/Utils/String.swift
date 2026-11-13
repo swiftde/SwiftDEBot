@@ -1,6 +1,12 @@
 import Foundation
 
 extension String {
+  /// The first http or https URL in a message. Stops at `>` because Discord users wrap links in `<…>` to suppress
+  /// their preview, and the brackets are not part of the URL.
+  var firstURL: String? {
+    firstMatch(of: #/https?://[^\s>]+/#).map { String($0.output) }
+  }
+
   /// Splits text into non-empty messages within Discord's length limit, preferring to cut at whitespace so line
   /// breaks survive and words stay whole. Words longer than the limit are cut hard.
   func maxMessageLengthChunks(maxChars: Int = 2000) -> [String] {
