@@ -44,7 +44,8 @@ struct SummarizeCommand: MessageCommand {
     } catch OpenRouterError.missingAPIKey {
       try await client.send("💀 OPENROUTER_API_KEY fehlt", to: message.channel_id)
     } catch let error {
-      log.error("Failure to send message: \(error)")
+      log.error("Failure to summarize: \(error)")
+      try await client.send("Ich hatte einen Fehler beim Zusammenfassen 😵", to: message.channel_id)
     }
   }
 
