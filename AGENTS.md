@@ -15,7 +15,7 @@ swift format format --in-place --recursive --parallel Package.swift Sources Test
 swift format lint --strict --recursive --parallel Package.swift Sources Tests
 ```
 
-CI runs the lint and test steps on Linux, so code must build without Apple-only frameworks. The Swift version of the nixpkgs revision pinned in `flake.lock` and `SWIFT_VERSION` in the `Dockerfile` must match; `nix flake check` verifies this, and CI runs it.
+On macOS, `swift test` from the dev shell builds the tests but cannot launch them (`posix_spawn error: Permission denied`), so run them with Xcode's toolchain (`/usr/bin/swift test`) there. CI runs the lint and test steps on Linux, so code must build without Apple-only frameworks. The Swift version of the nixpkgs revision pinned in `flake.lock` and `SWIFT_VERSION` in the `Dockerfile` must match; `nix flake check` verifies this, and CI runs it.
 
 Tests use Swift Testing with [PropertyBased](https://github.com/x-sheep/swift-property-based) for property-based tests. They `@testable import` the executable target. Top-level code in `main.swift` does not run in tests, so the globals defined there (`httpClient`, `log`, `bot`, `reminderStore`) are never initialized and must not be used. Logic worth testing belongs in the helpers in `Utils/` or in a command's own pure functions. Code under test must not cancel a sleeping task, which rules out the `.timeLimit` trait too: on x86_64 Linux, Swift Testing segfaults capturing a backtrace of the resulting throw, so the Nix build fails while macOS and aarch64 pass.
 
