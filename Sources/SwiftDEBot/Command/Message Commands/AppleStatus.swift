@@ -46,7 +46,7 @@ struct AppleStatusCommand: MessageCommand {
   }
 }
 
-private struct StatusResponse: Decodable {
+struct StatusResponse: Decodable {
   let services: [ServiceStatus]
 
   struct ServiceStatus: Decodable {
@@ -64,12 +64,13 @@ private struct StatusResponse: Decodable {
       let usersAffected: String
       let datePosted: String
       let startDate: String
-      let endDate: String
+      /// Null while the event is ongoing.
+      let endDate: String?
 
       var description: String {
         """
         \(statusType) \(eventStatus)
-        \(startDate) - \(endDate)
+        \(startDate)\(endDate.map { " - \($0)" } ?? "")
         \(usersAffected)
         \(message)
         """
